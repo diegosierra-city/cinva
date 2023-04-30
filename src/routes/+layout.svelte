@@ -1,53 +1,21 @@
 <script>
-	import Header from './Header.svelte';
 	import './styles.css';
+	import {userNow} from '../store'
+	import CstMenu from '$lib/components/CstMenu.svelte';
 </script>
 
-<div class="app">
-	<Header />
 
-	<main>
-		<slot />
+	<main class="flex w-full m-0 p-0 items-start body-app" >
+		
+		{#if $userNow.id!=0}
+			 <CstMenu />
+		{/if}
+		<section class="w-full p-0" >
+			<slot />
+		</section>
 	</main>
 
-	<footer>
-		<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
-	</footer>
-</div>
+	
 
-<style>
-	.app {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-	}
 
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
-		width: 100%;
-		max-width: 64rem;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
 
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-	}
-
-	footer a {
-		font-weight: bold;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
-	}
-</style>
