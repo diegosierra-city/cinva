@@ -33,10 +33,11 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 
 	let time_now = Date.now() / 1000;
 
-	$: if (cookie_info('user')) {
-		console.log(cookie_info('user'));
+	const updateUser =(u:any)=>{
+	if(u!=null){
+	console.log(cookie_info('user'));
 
-		userN = cookie_info('user');
+		userN = u;//cookie_info('user')
 		user = JSON.parse(userN);
 		//console.log(user.name)
 		$userNow = user;
@@ -46,8 +47,12 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 			user = userNew;
 			$userNow = userNew;
 			//console.log('Out')
-		}
+		};	
 	}
+		
+	}
+
+	$: updateUser (cookie_info('user'))
 </script>
 
 <svelte:head>
@@ -57,6 +62,7 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 </svelte:head>
 
 <section class="w-full h-full m-0 " style="min-heigth:100vh; height:100vh">
+
 	{#if $userNow.id == 0 || $userNow.id == undefined}
 <CstLogin /> 
 {:else if $moduleAdmin == 'Técnicos'}

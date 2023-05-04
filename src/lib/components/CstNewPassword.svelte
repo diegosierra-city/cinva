@@ -46,5 +46,5 @@
 
 <div class="flex">
 	<input type="password" class="inputA w-32" bind:value={newpassword} />
-	<button class="btn-green" on:click={() => updateClave()}><i class="fa fa-check" /> </button>
+	<button class="text-xl" on:click={() => updateClave()}><i class="fa fa-chevron-circle-right text-green" /> </button>
 </div>

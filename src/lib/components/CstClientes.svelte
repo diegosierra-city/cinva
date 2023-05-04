@@ -47,22 +47,29 @@
 	});
 
 	function addCliente() {
-		let newCliente: Cliente = {
+		let newCliente: Cliente;
+
+		newCliente = {
 			id: Date.now(),
 			nombre: '',
 			nit: '',
 			ciudad: 'Bogotá',
 			direccion: '',
+			ciudad2: 'Bogotá',
+			direccion2: '',
+			ciudad3: 'Bogotá',
+			direccion3: '',
+			ciudad4: 'Bogotá',
+			direccion4: '',
 			telefono: 0,
 			contacto: '',
 			cargo_contacto: '',
 			activo: true
 		};
-
 		listClientes = [...listClientes, newCliente];
 	}
 
-		const saveClientes = async () => {
+	const saveClientes = async () => {
 		console.log(listClientes);
 		await fetch(urlAPI + '?ref=save-list', {
 			method: 'POST', //POST - PUT - DELETE
@@ -101,21 +108,20 @@
 	};
 
 	let folder = 'cst_clientes';
-
-
 </script>
 
 <svelte:head>
 	<title>Clientes</title>
 </svelte:head>
 
-<div class="p-3 w-full ">
+<div class="p-3 w-full">
 	<div class="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
 		<div class="flex">
-			<button class="btn-green mr-2 flex" on:click={saveClientes}> 
-    <i class="fa fa-save mt-1 mr-2" />
-    Guardar</button>
-			<button class="btn-primary flex" on:click={addCliente}>
+			<button class="btn-green mr-2 flex" on:click={saveClientes}>
+				<i class="fa fa-save mt-1 mr-2" />
+				Guardar</button
+			>
+			<button class="btn-primary flex" on:click={() => addCliente()}>
 				<i class="fa fa-plus mt-1 mr-2" />
 				Agregar Nuevo Cliente</button
 			>
@@ -125,9 +131,11 @@
 				<th scope="col" class="" />
 				<th scope="col" class=""> Nombre</th>
 				<th scope="col" class=""> Nit </th>
-				<th scope="col" class=""> Ciudad/Dirección </th>
+				<th scope="col" class=""> Ciudad </th>
+				<th scope="col" class=""> Dirección </th>
 				<th scope="col" class=""> Telefono </th>
 				<th scope="col" class=""> Contacto </th>
+
 				<th scope="col" class=""> Activo </th>
 			</thead>
 			<tbody>
@@ -143,15 +151,60 @@
 
 						<td>
 							<input type="text" class="inputA" bind:value={cliente.ciudad} placeholder="ciudad" />
-       <input type="text" class="inputA" bind:value={cliente.direccion} placeholder="direccion" />
+							Otras Sedes:<br />
+							<input type="text" class="inputA" bind:value={cliente.ciudad2} placeholder="ciudad" />
+							<input type="text" class="inputA" bind:value={cliente.ciudad3} placeholder="ciudad" />
+							<input type="text" class="inputA" bind:value={cliente.ciudad4} placeholder="ciudad" />
+						</td>
+						<td>
+							<input
+								type="text"
+								class="inputA"
+								bind:value={cliente.direccion}
+								placeholder="direccion"
+							/>
+							Otras Sedes:<br />
+							<input
+								type="text"
+								class="inputA"
+								bind:value={cliente.direccion2}
+								placeholder="direccion"
+							/>
+							<input
+								type="text"
+								class="inputA"
+								bind:value={cliente.direccion3}
+								placeholder="direccion"
+							/>
+							<input
+								type="text"
+								class="inputA"
+								bind:value={cliente.direccion4}
+								placeholder="direccion"
+							/>
 						</td>
 						<td class="">
-							<input type="text" class="inputA" bind:value={cliente.telefono} placeholder="telefono" />
+							<input
+								type="text"
+								class="inputA"
+								bind:value={cliente.telefono}
+								placeholder="telefono"
+							/>
 						</td>
 
 						<td>
-							<input type="text" class="inputA" bind:value={cliente.contacto} placeholder="nombre contacto" />
-       <input type="text" class="inputA" bind:value={cliente.cargo_contacto} placeholder="cargo" />
+							<input
+								type="text"
+								class="inputA"
+								bind:value={cliente.contacto}
+								placeholder="nombre contacto"
+							/>
+							<input
+								type="text"
+								class="inputA"
+								bind:value={cliente.cargo_contacto}
+								placeholder="cargo"
+							/>
 						</td>
 
 						<td class="text-center"><input type="checkbox" bind:checked={cliente.activo} /></td>
