@@ -59,6 +59,18 @@
 						<span class="text-sm ml-2 hidden md:block">Clientes</span>
 					</button>
 				</li>
+				<li class:boton_admin_active={$moduleAdmin === 'Maquinas'}>
+					<button
+						class="flex items-center w-full"
+						on:click={() => {
+							$moduleAdmin = 'Maquinas';
+						}}
+					>
+						<i class="fa fa-print" />
+
+						<span class="text-sm ml-2 hidden md:block">Maquinas</span>
+					</button>
+				</li>
 				<li class:boton_admin_active={$moduleAdmin === 'Programador'}>
 					<button
 						class="flex items-center"

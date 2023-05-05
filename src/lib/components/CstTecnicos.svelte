@@ -163,7 +163,7 @@
 </script>
 
 <svelte:head>
-	<title>Tènicos</title>
+	<title>Técnicos</title>
 </svelte:head>
 
 <div class="p-3 w-full ">

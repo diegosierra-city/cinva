@@ -139,7 +139,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
           unset($row['clave']); ///quitamos este campo del array
 
           $response[] = $row;
-         
         }
 
 
@@ -387,13 +386,12 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           }
 
           $action = "INSERT INTO $folder ($rA) VALUES ($rB)";
-
-          $mysqli->query($action) or die($mysqli->error);
+          $mysqli->query($action);
           ///
           if ($utilizar_cod == 'si') {
-            $resultID = $mysqli->query("SELECT id FROM $folder WHERE cod='$cod' ORDER BY id DESC LIMIT 1") or die($mysqli->error);
+            $resultID = $mysqli->query("SELECT id FROM $folder WHERE cod='$cod' ORDER BY id DESC LIMIT 1");
           } else {
-            $resultID = $mysqli->query("SELECT id FROM $folder ORDER BY id DESC LIMIT 1") or die($mysqli->error);
+            $resultID = $mysqli->query("SELECT id FROM $folder ORDER BY id DESC LIMIT 1");
           }
 
           $rowID = $resultID->fetch_array();
@@ -406,13 +404,13 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $u = trim($update, ',');
           }
           $action = "UPDATE $folder SET $u WHERE id='$id'";
-          $mysqli->query($action) or die($mysqli->error);
+          $mysqli->query($action);
         }
         $act .= $action;
       }
 
-      //borramos los que no están
 
+      //borramos los que no están
 
       if ($utilizar_cod == 'si') {
         if ($condicion != '') {
@@ -459,8 +457,7 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ///
         header("HTTP/1.1 200 OK");
         echo json_encode($response);
-
-        //echo '[{"save":"ok--  ' . $condicion. '"}]';
+        //echo '[{"save":"ok--  ' . $action. '"}]';
         //
       }
     }

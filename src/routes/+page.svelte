@@ -5,6 +5,7 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
  import CstLogin from '$lib/components/CstLogin.svelte';
 	import CstTecnicos from '$lib/components/CstTecnicos.svelte';
 	import CstClientes from '$lib/components/CstClientes.svelte';
+	import CstMaquinas from '$lib/components/CstMaquinas.svelte';
 
 	// import PmsHotel from '$lib/components/PmsHotel.svelte';
 	// import PmsHabitaciones from '$lib/components/PmsHabitaciones.svelte';
@@ -69,6 +70,8 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 <CstTecnicos />
 {:else if $moduleAdmin == 'Clientes'}
 <CstClientes />
+{:else if $moduleAdmin == 'Maquinas'}
+<CstMaquinas />
 {/if}
 
 <footer class="fixed bottom-0">
