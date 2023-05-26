@@ -6,6 +6,9 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 	import CstTecnicos from '$lib/components/CstTecnicos.svelte';
 	import CstClientes from '$lib/components/CstClientes.svelte';
 	import CstMaquinas from '$lib/components/CstMaquinas.svelte';
+	import CstProgramador from '$lib/components/CstProgramador.svelte';
+	import CstMisVisitas from '$lib/components/CstMisVisitas.svelte';
+	import { onMount } from 'svelte';
 
 	// import PmsHotel from '$lib/components/PmsHotel.svelte';
 	// import PmsHabitaciones from '$lib/components/PmsHabitaciones.svelte';
@@ -54,6 +57,10 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 	}
 
 	$: updateUser (cookie_info('user'))
+
+
+	
+	
 </script>
 
 <svelte:head>
@@ -72,6 +79,10 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 <CstClientes />
 {:else if $moduleAdmin == 'Maquinas'}
 <CstMaquinas />
+{:else if $moduleAdmin == 'Programador'}
+<CstProgramador />
+{:else if $moduleAdmin == 'Mis Visitas'}
+<CstMisVisitas />
 {/if}
 
 <footer class="fixed bottom-0">

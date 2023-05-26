@@ -35,7 +35,7 @@ export const cookie_info = (name: string) => {
 }
 
 
-export const moduleAdmin = writable('Mis Visitas')//first module
+export const moduleAdmin = writable('')//first module
 
 export const userNow = writable({
 	id: 0,

@@ -9,6 +9,7 @@
 	import Messages from '$lib/components/Messages.svelte';
 	import type { Message } from '$lib/types/Message';
 	import CstDireccionMaquina from './CstDireccionMaquina.svelte';
+	import CstReporte from './CstReporte.svelte';
 
 	let m_show: boolean = false;
 	let message: Message;
@@ -17,6 +18,8 @@
 	let listClientes: Array<Cliente> = [];
 	let listTecnicos: Array<Tecnico> = [];
 	let listProgramacion: Array<Visita> = [];
+	let posicionReporte: number = 0;
+	let showVisita: boolean = false;
 
 	const urlAPI = $apiKey.urlAPI;
 	const urlFiles = $apiKey.urlFiles;
@@ -26,7 +29,7 @@
 	// Obtener los componentes de la fecha (año, mes y día)
 	const año = fechaActual.getFullYear();
 	const mes = fechaActual.getMonth() + 1; // Los meses van de 0 a 11, así que hay que sumar 1
-	const dia = fechaActual.getDate() + 1;
+	const dia = fechaActual.getDate();
 	const hoy = fechaActual.getDate();
 
 	// Formatear la fecha como 'YYYY-mm-dd'
@@ -136,7 +139,9 @@
 				'&token=' +
 				$userNow.token +
 				'&folder=cst_visita&orden=id&campo=fecha_programada&campoV=' +
-				f
+				f +
+				'&campo2=tecnico_id&campoV2=' +
+				$userNow.id
 		); //
 		await fetch(
 			urlAPI +
@@ -147,11 +152,13 @@
 				'&token=' +
 				$userNow.token +
 				'&folder=cst_visita&orden=id&campo=fecha_programada&campoV=' +
-				f
+				f +
+				'&campo2=tecnico_id&campoV2=' +
+				$userNow.id
 		)
 			.then((response) => response.json())
 			.then((result) => {
-				console.log('recibiendoProgramacion:');
+				console.log('recibiendo:');
 
 				listProgramacion = result;
 				console.log(listProgramacion);
@@ -166,7 +173,6 @@
 		loadProgramacion(fecha);
 	});
 
-	
 	let newProgramacion: Visita = {
 		id: 0,
 		cliente_id: 0,
@@ -195,18 +201,20 @@
 	function addProgramacion(cliente_id: number, maquina_id: number) {
 		//alert(`cliente_id ${cliente_id} y ${maquina_id}`)
 		let er: any;
-		listProgramacion.find((visita) => visita.maquina_id === maquina_id)? er=false : er=true;
-//alert(er)
-if(er==false){
-	message = {
-					title: 'error',
-					text: 'esta máquina ya esta incluida en la programación de '+fecha,
-					class: 'message-red',
-					accion: ''
-				};
-				m_show = true;
-				return
-}
+		listProgramacion.find((visita) => visita.maquina_id === maquina_id)
+			? (er = false)
+			: (er = true);
+		//alert(er)
+		if (er == false) {
+			message = {
+				title: 'error',
+				text: 'esta máquina ya esta incluida en la programación de ' + fecha,
+				class: 'message-red',
+				accion: ''
+			};
+			m_show = true;
+			return;
+		}
 		newProgramacion.id = Date.now();
 		newProgramacion.cliente_id = cliente_id;
 		newProgramacion.maquina_id = maquina_id;
@@ -243,7 +251,7 @@ if(er==false){
 	const deleteProgramacion = (id: number) => {
 		if (confirm('Desea Borrar esta Maquina de la Programción?')) {
 			listProgramacion = listProgramacion.filter((item) => item.id != id);
-			
+
 			message = {
 				title: 'Borrar de Programación',
 				text: 'Se ha borrado la Maquina del listado de la programación',
@@ -251,30 +259,27 @@ if(er==false){
 				accion: ''
 			};
 			m_show = true;
-
 		}
 
 		//return menu_list;
-	}
+	};
 
-const saveProgramacion = async () =>{
-	//revisamos que todos tengan Tecnico asignado
-	let er: any;
-		listProgramacion.find((visita) => visita.tecnico_id === 0)? er=false : er=true;
-//alert(er)
-if(er==false){
-	message = {
-					title: 'error',
-					text: 'Hay Visitas que no tienen Técnico Responsable '+fecha,
-					class: 'message-red',
-					accion: ''
-				};
-				m_show = true;
-				return
-}
-//console.log(listProgramacion)
-	await fetch(
-		urlAPI+'?ref=save-list', {
+	const saveProgramacion = async () => {
+		//revisamos que todos tengan Tecnico asignado
+		let er: any;
+		listProgramacion.find((visita) => visita.tecnico_id === 0) ? (er = false) : (er = true);
+		//alert(er)
+		if (er == false) {
+			message = {
+				title: 'error',
+				text: 'Hay Visitas que no tienen Técnico Responsable ' + fecha,
+				class: 'message-red',
+				accion: ''
+			};
+			m_show = true;
+			return;
+		}
+		await fetch(urlAPI + '?ref=save-list', {
 			method: 'POST', //POST - PUT - DELETE
 			body: JSON.stringify({
 				user_id: $userNow.id,
@@ -282,7 +287,7 @@ if(er==false){
 				token: $userNow.token,
 				list: listProgramacion,
 				folder: 'cst_visita',
-				orden:'id',
+				orden: 'id',
 				campo: 'fecha_programada',
 				campoV: fecha
 			}),
@@ -293,43 +298,37 @@ if(er==false){
 			.then((response) => response.json())
 			//.then(result => console.log(result))
 			.then((result) => {
-				console.log(result)
-					message = {
-						title: 'Guardar',
-						text: 'La Programación se guardó',
-						class: 'message-green',
-						accion: ''
-					};
-					m_show = true;
+				console.log(result);
+				message = {
+					title: 'Guardar',
+					text: 'La Programación se guardó',
+					class: 'message-green',
+					accion: ''
+				};
+				m_show = true;
 
-					//console.log("Muy Bien:"+result[0].ok);
-					//++listProgramacion = result;
-				
+				//console.log("Muy Bien:"+result[0].ok);
+				//++listProgramacion = result;
 			})
 
 			.catch((error) => console.log(error.message));
 
 		//  });
-	}
-
+	};
 </script>
 
 <svelte:head>
 	<title>Programador</title>
 </svelte:head>
 
-<div class="p-3 w-full grid grid-cols-2 gap-2">
+<div class="p-3 w-full">
 	<div class="relative overflow-x-auto w-full">
-		<h3>Programar:</h3>
+		<h3>Mis Visitas:</h3>
 		<div class="flex">
 			<input type="date" class="inputA w-32" bind:value={fecha} />
-			<button class="btn-primary mr-2 mt-1 flex" on:click={()=>loadProgramacion(fecha)}>
+			<button class="btn-primary mr-2 mt-1 flex" on:click={() => loadProgramacion(fecha)}>
 				<i class="fa fa-angle-double-down mt-1 mr-2" />
 				Cargar</button
-			>
-			<button class="btn-green mr-2 mt-1 flex" on:click={()=>saveProgramacion()}>
-				<i class="fa fa-save mt-1 mr-2" />
-				Guardar</button
 			>
 		</div>
 
@@ -347,40 +346,44 @@ if(er==false){
 					<tr class="bg-white border-b hover:bg-aliceblue align-top">
 						<td class="font-bold active:bg-red"
 							>{i + 1}<br />
-							
-							{#if pro.id>1000000000}
-								 <!-- content here -->
-									<button on:click={()=>{
-										deleteProgramacion(pro.id)
-									}}>
-										<i class="fa fa-minus-square text-red text-xl" />
-									</button>
+
+							{#if pro.id > 1000000000}
+								<!-- content here -->
+								<button
+									on:click={() => {
+										deleteProgramacion(pro.id);
+									}}
+								>
+									<i class="fa fa-minus-square text-red text-xl" />
+								</button>
 							{/if}
-							
 						</td>
 						<td class="text-red text-center">
-							{#if pro.id<10000000}
-								 <!-- content here -->
-									{pro.id}
+							{#if pro.id < 10000000}
+								<!-- content here -->
+								<button class="btn-green" on:click={()=>{
+									showVisita=true
+									posicionReporte=i
+								}}>
+								{pro.id}	
+								</button>
+								
 							{:else}
-								 <!-- else content here -->
-									--
+								<!-- else content here -->
+								--
 							{/if}
 						</td>
 						<td>
-							<select class="inputA" bind:value={pro.tecnico_id}>
-								{#each listTecnicos as tecnico}
-									<!-- content here -->
-									<option value={tecnico.id}>{tecnico.nombre}</option>
-								{/each}
-							</select>
+							{listTecnicos.find((tecnico) => tecnico.id === pro.tecnico_id)?.nombre}
 						</td>
 						<td>
 							{listClientes.find((cliente) => cliente.id === pro.cliente_id)?.nombre}<br />
 							{listMaquinas.find((maquina) => maquina.id === pro.maquina_id)?.direccion}
 						</td>
 						<td>
-							{listMaquinas.find((maquina) => maquina.id === pro.maquina_id)?.marca}-{listMaquinas.find((maquina) => maquina.id === pro.maquina_id)?.modelo}<br>
+							{listMaquinas.find((maquina) => maquina.id === pro.maquina_id)
+								?.marca}-{listMaquinas.find((maquina) => maquina.id === pro.maquina_id)?.modelo}<br
+							/>
 							{listMaquinas.find((maquina) => maquina.id === pro.maquina_id)?.serial}
 						</td>
 						<td>
@@ -395,59 +398,22 @@ if(er==false){
 			</tbody>
 		</table>
 	</div>
-
-	<div class="relative overflow-x-auto overflow-y-auto sm:rounded-lg w-full h-full">
-		<h3>Listado de Máquinas:</h3>
-		<table class="w-full text-sm text-left">
-			<thead class="text-xs text-white uppercase bg-primary">
-				<th scope="col" class="" />
-				<th scope="col" class=""> Cliente</th>
-				<th scope="col" class=""> Máquina </th>
-				<th scope="col" class=""> Contadores </th>
-				<th scope="col" class=""> Contrato </th>
-			</thead>
-			<tbody>
-				{#each listMaquinas as maquina, i}
-					<tr class="bg-white border-b hover:bg-aliceblue align-top">
-						<td class="font-bold"
-							>{i + 1}<br />
-							<button
-								on:click={() => {
-									addProgramacion(maquina.cliente_id, maquina.id);
-								}}
-							>
-								<i class="fa fa-plus-square text-green text-xl" />
-							</button>
-						</td>
-						<td>
-							{listClientes.find((cliente) => cliente.id === maquina.cliente_id)?.nombre}<br />
-							{maquina.direccion}
-						</td>
-						<td>
-							{maquina.marca} <br />
-							{maquina.modelo}<br />
-							{maquina.serial}
-						</td>
-						<td>
-							Negro: {maquina.contador_negro}<br />
-							Color: {maquina.contador_color}
-						</td>
-
-						<td>
-							{maquina.tipo_contrato}<br />
-							{#if maquina.ultima_visita != '0000-00-00'}
-								<!-- content here -->
-								{maquina.ultima_visita}
-							{/if}
-						</td>
-					</tr>
-				{:else}
-					Sin registros
-				{/each}
-			</tbody>
-		</table>
-	</div>
 </div>
+
+{#if showVisita}
+	 <!-- content here -->
+		<CstReporte
+	bind:m_show
+	bind:message
+	bind:showVisita
+	{listMaquinas}
+	{listClientes}
+	{listTecnicos}
+	bind:listProgramacion
+	bind:posicionReporte
+/>
+{/if}
+
 
 {#if m_show == true}
 	<Messages bind:m_show bind:message />

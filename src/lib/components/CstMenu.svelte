@@ -17,7 +17,16 @@
 	const salir = () => {
 		cookie_update('user', JSON.stringify(userNew));
 		$userNow = userNew;
+		$moduleAdmin = '';
 	};
+
+	if($moduleAdmin == ''){
+	if($userNow.tipo=='admin'){
+		$moduleAdmin = 'Programador'
+	}else if ($userNow.tipo=='tecnico'){
+		$moduleAdmin = 'Mis Visitas'
+	}	
+}
 </script>
 
 <div class="relative z-10">
@@ -83,25 +92,7 @@
 						<span class="text-sm ml-2 hidden md:block">Programador</span>
 					</button>
 				</li>
-				{/if}
 				
-
-				
-				
-
-				<li class:boton_admin_active={$moduleAdmin === 'Mis Visitas'}>
-					<button
-						class="flex items-center"
-						on:click={() => {
-							$moduleAdmin = 'Mis Visitas';
-						}}
-					>
-						<i class="fa fa-wrench" />
-
-						<span class="text-sm ml-2 hidden md:block">Mis Visitas</span>
-					</button>
-				</li>
-
 				<li class:boton_admin_active={$moduleAdmin === 'Reportes'}>
 					<button
 						class="flex items-center"
@@ -114,6 +105,28 @@
 						<span class="text-sm ml-2 hidden md:block">Reportes</span>
 					</button>
 				</li>
+				{:else if $userNow.tipo=='tecnico'}
+				<li class:boton_admin_active={$moduleAdmin === 'Mis Visitas'}>
+					<button
+						class="flex items-center"
+						on:click={() => {
+							$moduleAdmin = 'Mis Visitas';
+						}}
+					>
+						<i class="fa fa-wrench" />
+
+						<span class="text-sm ml-2 hidden md:block">Mis Visitas</span>
+					</button>
+				</li>
+				{/if}
+				
+
+				
+				
+
+				
+
+				
 			</ul>
 
 			

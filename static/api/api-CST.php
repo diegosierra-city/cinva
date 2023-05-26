@@ -115,6 +115,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         $folder = $_GET['folder'];
         $campo = $_GET['campo'];
         $campoV = $_GET['campoV'];
+        $campo2 = $_GET['campo2'];
+        $campoV2 = $_GET['campoV2'];
         $orden = $_GET['orden'];
 
         if (!$_GET['orden']) {
@@ -123,7 +125,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         /// load categories
         $response = array();
 
-        if ($campo != '') {
+        if ($campo2 != '') {
+          $result = $mysqli->query("SELECT * FROM $folder WHERE $campo='$campoV' AND $campo2='$campoV2' ORDER BY $orden") or die($mysqli->error);
+        }else if ($campo != '') {
           $result = $mysqli->query("SELECT * FROM $folder WHERE $campo='$campoV' ORDER BY $orden") or die($mysqli->error);
         } else {
           $result = $mysqli->query("SELECT * FROM $folder ORDER BY $orden") or die($mysqli->error);
@@ -131,11 +135,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
 
         while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+          if($row['activo']){
           if ($row['activo'] == 1) {
             $row['activo'] = true;
           } else if ($row['activo'] == 0) {
             $row['activo'] = false;
           }
+        }
+
           unset($row['clave']); ///quitamos este campo del array
 
           $response[] = $row;
@@ -409,6 +416,10 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $act .= $action;
       }
 
+      /*  header("HTTP/1.1 200 OK");
+      //echo '[{"save":"ok:' . $act . '"}]';
+      echo '[{"save":"ok:' . $mysqli->error . '"}]';
+      return; */ 
 
       //borramos los que no están
 
@@ -419,8 +430,7 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod'") or die($mysqli->error);
       }
 
-      //header("HTTP/1.1 200 OK");
-      // echo '[{"save":"ok:' . $act . '"}]';
+      
       //
       if ($data['respuesta'] == 'basica') {
         header("HTTP/1.1 200 OK");

@@ -34,15 +34,17 @@ box-sizing:border-box;
     transition: 600ms all ease;
  }
  
+table{
+   @apply rounded-lg border border-primary text-sm text-left text-black w-full mb-2 
+}
 
  table td{
     border-left: dotted 1px #ccc; border-bottom: solid 1px #ccc;
     @apply p-1
     
 }
-table{
-   @apply rounded-lg border border-primary text-sm text-left text-black w-full mb-2 
-}
+
+
 table thead{
     @apply text-xs text-white uppercase bg-primary
 }
