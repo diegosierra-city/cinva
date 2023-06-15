@@ -1,7 +1,7 @@
 <script>
 	import './styles.css';
 	import {userNow} from '../store'
-	import CstMenu from '$lib/components/CstMenu.svelte';
+	import CstMenu from '$lib/components/CaMenu.svelte';
 </script>
 
 

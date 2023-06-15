@@ -15,7 +15,7 @@ export default {
 			strict: true ///true
 		}),
 		paths: {
-			base: '/cst' //nombre de la carpeta destino
+			base: '/ca' //nombre de la carpeta destino
 		},
 
 	}

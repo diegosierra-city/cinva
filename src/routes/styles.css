@@ -198,8 +198,12 @@ footer{
     @apply flex w-full justify-between text-lightgray cursor-pointer items-center mb-2 hover:bg-white hover:bg-opacity-30 hover:text-white rounded-lg p-1 
 }
 .boton_admin_active{
-    @apply flex w-full justify-between text-lightgray cursor-pointer items-center mb-2  hover:text-white rounded-lg p-1 bg-black
+    @apply text-black hover:text-terciary bg-secondary 
 }
+.boton_admin_active .fa{
+    @apply text-black 
+}
+
 
 .btn-min{
     @apply flex text-white cursor-pointer items-center mx-1 hover:ring-1 hover:text-white rounded-md p-1 

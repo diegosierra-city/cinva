@@ -2,13 +2,14 @@
 import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 	import type { User } from '$lib/types/User'
 
- import CstLogin from '$lib/components/CstLogin.svelte';
-	import CstTecnicos from '$lib/components/CstTecnicos.svelte';
-	import CstClientes from '$lib/components/CstClientes.svelte';
-	import CstMaquinas from '$lib/components/CstMaquinas.svelte';
-	import CstProgramador from '$lib/components/CstProgramador.svelte';
-	import CstMisVisitas from '$lib/components/CstMisVisitas.svelte';
+ import CstLogin from '$lib/components/CaLogin.svelte';
+	import CstTecnicos from '$lib/components/CaTecnicos.svelte';
+	import CstClientes from '$lib/components/CaClientes.svelte';
+	import CstMaquinas from '$lib/components/CaMaquinas.svelte';
+	import CstProgramador from '$lib/components/CaProgramador.svelte';
+	import CstMisVisitas from '$lib/components/CaMisVisitas.svelte';
 	import { onMount } from 'svelte';
+	import CaProveedores from '$lib/components/CaProveedores.svelte';
 
 	// import PmsHotel from '$lib/components/PmsHotel.svelte';
 	// import PmsHabitaciones from '$lib/components/PmsHabitaciones.svelte';
@@ -57,15 +58,12 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 	}
 
 	$: updateUser (cookie_info('user'))
-
-
-	
 	
 </script>
 
 <svelte:head>
-	<title>CST</title>
-	<meta name="description" content="sistema para Control de Servicio Técnico" />
+	<title>CA</title>
+	<meta name="description" content="Sistema para Control de Agencia de Good Trips Colombia" />
 	<link rel="stylesheet" href="./css/font-awesome-4.7.0/css/font-awesome.css" />
 </svelte:head>
 
@@ -77,16 +75,16 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 <CstTecnicos />
 {:else if $moduleAdmin == 'Clientes'}
 <CstClientes />
-{:else if $moduleAdmin == 'Maquinas'}
-<CstMaquinas />
+{:else if $moduleAdmin == 'Proveedores'}
+<CaProveedores />
 {:else if $moduleAdmin == 'Programador'}
 <CstProgramador />
 {:else if $moduleAdmin == 'Mis Visitas'}
 <CstMisVisitas />
 {/if}
 
-<footer class="fixed bottom-0">
-	<p class="text-center">Todos los Derechos Reservados DISJHER</p>
+<footer class="fixed bottom-0 p-1">
+	<small class="text-center ml-8">Todos los Derechos Reservados <strong>Good Trips Colombia</strong></small>
 </footer>
 
 </section>

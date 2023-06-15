@@ -53,9 +53,9 @@ export const apiKey = writable({
 
 	company_id: 1,
 	tokenWeb: "f99dad2ac548a08d3c28d74783092234",//7ef4599929298387a27b4b220d757d2f
-	company_name: "CST",
+	company_name: "CA",
 	money: "$",///comillas simples error
-	urlAPI: "https://cst.cityciudad.com/cst/api/api-CST.php",
-	urlFiles: "https://cst.cityciudad.com/cst/maker-files/"	
+	urlAPI: "https://goodtripscolombia.com/ca/api/api-CA.php",
+	urlFiles: "https://goodtripscolombia.com/ca/maker-files/"	
 })
 

@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     //////++++
 
   } else
-        ///CST
+        ///CA
         if ($ref == 'load') {
 
           $user_id = $_GET['user_id'];
@@ -151,7 +151,7 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $time = time() + (4 * 60 * 60); //4H 
     
     $myArray = array();
-    $result = $mysqli->query("SELECT * FROM cst_tecnicos WHERE email='$email' AND password='$password2' AND activo='1' LIMIT 1");
+    $result = $mysqli->query("SELECT * FROM ca_tecnicos WHERE email='$email' AND password='$password2' AND activo='1' LIMIT 1");
 
     $token = '';
     $rowR = [];
