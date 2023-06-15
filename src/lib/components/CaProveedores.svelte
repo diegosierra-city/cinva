@@ -5,8 +5,6 @@
 	import { Moon } from 'svelte-loading-spinners';
 	import Messages from '$lib/components/Messages.svelte';
 	import type { Message } from '$lib/types/Message';
-	import CstNewPassword from './CaNewPassword.svelte';
-	import CaProveedor from './CaProveedor.svelte';
 	import CaFicha from './CaFicha.svelte';
 
 	let m_show: boolean = false;

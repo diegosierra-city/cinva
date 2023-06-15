@@ -5,7 +5,7 @@
 	import { Moon } from 'svelte-loading-spinners';
 	import Messages from '$lib/components/Messages.svelte';
 	import type { Message } from '$lib/types/Message';
-	import CstNewPassword from './CaNewPassword.svelte';
+	import CaFicha from './CaFicha.svelte';
 
 	let m_show: boolean = false;
 	let message: Message;
@@ -25,7 +25,8 @@
 			$userNow.token +
 			'&folder=ca_clientes&orden=nombre'
 	); //&campo=tipo&campoV=tecnico
-	onMount(async () => {
+
+	const loadClientes = async () => {
 		await fetch(
 			urlAPI +
 				'?ref=load-list&user_id=' +
@@ -44,23 +45,31 @@
 				console.log(listClientes);
 			})
 			.catch((error) => console.log(error.message));
-	});
+	}
+
+	let newCliente: Cliente;
+	newCliente = {
+		id: Date.now(),
+ tipo_documento: 0,
+ documento: '',
+ nombre: '',
+ nombre2: '',
+ apellido: '',
+ apellido2: '',
+ nombre_comercial: '',
+ pais: 'CO',
+ departamento: '',
+ ciudad: 'Bogotá',
+ telefono: '',
+ celular: '',
+ direccion: '',
+ email: '',
+ redes_sociales: '', 
+ tipo_cliente: 0,
+ activo: true
+	};
 
 	function addCliente() {
-		let newCliente: Cliente;
-
-		newCliente = {
-			id: Date.now(),
-			nombre: '',
-			nit: '',
-			pais: 'Colombia',
-			ciudad: 'Bogotá',
-			direccion: '',
-			telefono: 0,
-			contacto: '',
-			cargo_contacto: '',
-			activo: true
-		};
 		listClientes = [...listClientes, newCliente];
 	}
 
@@ -74,7 +83,7 @@
 				token: $userNow.token,
 				list: listClientes,
 				folder: 'ca_clientes',
-				orden: 'nombre'
+				orden: 'nombre,apellido'
 				//password: pass,
 			}),
 			headers: {
@@ -84,8 +93,7 @@
 			.then((response) => response.json())
 			//.then(result => console.log(result))
 			.then((result) => {
-				console.log('ok');
-				console.log(result);
+				console.log('GuardoListado',result);
 				message = {
 					title: 'Guardar',
 					text: 'Se guardó correctamente',
@@ -93,7 +101,7 @@
 					accion: ''
 				};
 				m_show = true;
-
+				updateExcel()
 				//++listClientes = result;
 			})
 
@@ -103,6 +111,81 @@
 	};
 
 	let folder = 'ca_clientes';
+	let showCliente: boolean = false;
+	let clienteActual: Cliente = newCliente;
+	let positionEdit:number = -1
+	let showFicha: boolean = false;
+
+	onMount(()=>{
+		loadClientes()
+	})
+
+	function actualizarView(p:Cliente){
+		listClientes[positionEdit]=p
+	updateExcel()
+	}
+
+	
+const updateExcel= async () => {
+		
+		await fetch(urlAPI + '?ref=excel-create', {
+			method: 'POST', //POST - PUT - DELETE
+			body: JSON.stringify({
+				user_id: $userNow.id,
+				time_life: $userNow.user_time_life,
+				token: $userNow.token,
+				list: listClientes,
+				folder: 'ca_clientes',
+				orden: 'nombre,apellido',
+				archivo: 'excelClientes.xlsx',
+			}),
+			headers: {
+				'Content-type': 'application/json; charset=UTF-8'
+			}
+		})
+			.then((response) => response.json())
+			.then((result) => {
+				console.log('excel',result);
+				})
+			.catch((error) => console.log(error.message));
+	}
+
+	
+	//$: console.log('Cliente:',clienteActual)
+	let uploadExcel=false
+	let fileExcel: FileList;
+let file: any
+
+	function upload() {
+		uploadExcel=true;	
+		const dataArray = new FormData();
+		dataArray.append('user_id', String($userNow.id));
+		dataArray.append('time_life', String($userNow.user_time_life));
+		dataArray.append('token', $userNow.token);
+		dataArray.append('file', 'excelClientes.xlsx');
+		dataArray.append('folder', 'ca_clientes');
+		dataArray.append('uploadFile', fileExcel[0]);
+	
+		fetch(urlAPI + '?ref=upload-excel&prefix=', {
+			method: 'POST',
+			body: dataArray
+		})
+			.then((response) => response.json())
+			.then((result) => {
+				// Successfully uploaded
+				console.log('upload:',result);
+					message = {
+						title: 'Subir Archivo',
+						text: 'Se ha subido el archivo y se ha actualizado la base de datos',
+						class: 'message-green',
+						accion: ''
+					};
+					m_show = true;
+					uploadExcel=false
+					loadClientes()
+			})
+			.catch((error) => console.log(error.message));
+	}
 </script>
 
 <svelte:head>
@@ -120,25 +203,62 @@
 				<i class="fa fa-plus mt-1 mr-2" />
 				Agregar Nuevo Cliente</button
 			>
-			<button class="btn-primary mr-8 flex" on:click={() => addCliente()}>
-				<i class="fa fa-plus mt-1 mr-2" />
-				Archivo Excel</button
-			>
-			<input type="search" class="inputA w-32 relative -top-1	" > <button class="btn-primary flex" on:click={() => addCliente()}>
+			
+			<!-- <input type="search" class="inputA w-32 relative -top-1" />
+			<button class="btn-primary flex" on:click={() => addCliente()}>
 				<i class="fa fa-plus mt-1 mr-2" />
 				Buscar</button
-			>
+			> -->
+			
 		</div>
+
+	<div class="flex">
+		<a href="https://goodtripscolombia.com/ca/api/api-CA.php?ref=download&archivo=2" target="_blank">
+			<button class="btn-primary mr-4 flex">
+				<i class="fa fa-download mt-1 mr-2" />
+				Descargar Excel</button
+			></a>
+
+			{#if uploadExcel}
+									<Moon size="40" unit="px" duration="4s" />
+				{/if}
+							
+				<button
+											class="btn-primary px-2 text-xs"
+											on:click={() => {
+												file.click();
+											}}
+										>
+										<i class="fa fa-upload mx-2" /> Subir Excel
+										
+										</button>
+
+								<input
+									type="file"
+									accept=".xlsx"
+									class="inputA w-32 hidden"
+									placeholder="Subir Excel"
+									bind:this={file}
+									bind:files={fileExcel}
+									on:change={() => {
+										uploadExcel=true
+										upload();
+									}}
+								/>
+			
+		
+
+	</div>
 		<table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
 			<thead class="text-xs text-white uppercase bg-primary dark:bg-gray-700 dark:text-gray-400">
 				<th scope="col" class="" />
-				<th scope="col" class=""> Nombre</th>
+				<th scope="col" class=""> Nombre/Razón Social </th>
 				<th scope="col" class=""> Nit </th>
 				<th scope="col" class=""> País </th>
 				<th scope="col" class=""> Ciudad </th>
 				<th scope="col" class=""> Dirección </th>
 				<th scope="col" class=""> Telefono </th>
-				<!-- <th scope="col" class=""> Contacto </th> -->
+				<th scope="col" class="" />
 				<th scope="col" class=""> Activo </th>
 			</thead>
 			<tbody>
@@ -146,24 +266,45 @@
 					<tr class="bg-white border-b hover:bg-aliceblue align-top">
 						<td class="font-bold">{i + 1}</td>
 						<td>
-							<input type="text" class="inputA" bind:value={cliente.nombre} placeholder="nombre" />
+							<input
+								type="text"
+								class="inputA mr-2"
+								bind:value={cliente.nombre}
+								placeholder="nombre"
+							/>
+							<input
+								type="text"
+								class="inputA"
+								bind:value={cliente.apellido}
+								placeholder="apellido"
+							/>
 						</td>
 						<td>
-							<input type="text" class="inputA" bind:value={cliente.nit} placeholder="nit" />
+							<input
+								type="text"
+								class="inputA"
+								bind:value={cliente.documento}
+								placeholder="nit"
+							/>
 						</td>
-<td>
+						<td>
 							<input type="text" class="inputA" bind:value={cliente.pais} placeholder="pais" />
-									</td>
+						</td>
 						<td>
-							<input type="text" class="inputA" bind:value={cliente.ciudad} placeholder="ciudad" />
-									</td>
+							<input
+								type="text"
+								class="inputA"
+								bind:value={cliente.ciudad}
+								placeholder="ciudad"
+							/>
+						</td>
 						<td>
 							<input
 								type="text"
 								class="inputA"
 								bind:value={cliente.direccion}
 								placeholder="direccion"
-							/>							
+							/>
 						</td>
 						<td class="">
 							<input
@@ -174,21 +315,13 @@
 							/>
 						</td>
 
-						<!-- <td>
-							<input
-								type="text"
-								class="inputA"
-								bind:value={cliente.contacto}
-								placeholder="nombre contacto"
-							/>
-							<input
-								type="text"
-								class="inputA"
-								bind:value={cliente.cargo_contacto}
-								placeholder="cargo"
-							/>
-						</td> -->
-
+						<td class="text-center text-xl">
+							<button class="text-green" on:click={()=>{
+								showFicha=true
+								clienteActual=cliente
+								positionEdit=i
+							}}><i class="fa fa-drivers-license-o mt-2" /></button>
+						</td>
 						<td class="text-center"><input type="checkbox" bind:checked={cliente.activo} /></td>
 					</tr>
 				{:else}
@@ -198,6 +331,11 @@
 		</table>
 	</div>
 </div>
+
+{#if showFicha}
+	 <!-- content here -->
+		<CaFicha bind:showFicha bind:elemento={clienteActual} folder='ca_clientes' {actualizarView} bind:m_show bind:message />
+{/if}
 
 {#if m_show == true}
 	<Messages bind:m_show bind:message />

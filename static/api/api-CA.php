@@ -73,6 +73,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
       $archivoName = 'excelProveedores.xlsx';
       $folder = 'ca_proveedores';
       $orden = 'nombre';
+    }else if ($archivo == 2) {
+      $archivoName = 'excelClientes.xlsx';
+      $folder = 'ca_clientes';
+      $orden = 'nombre,apellido';
     }
 
     if (!$archivoName) {
@@ -322,21 +326,17 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $err = $mysqli->error;
       }
 
-      /*  header("HTTP/1.1 200 OK");
+       /* header("HTTP/1.1 200 OK");
       //echo '+'.$action.'*';
-      //echo '[{"save":"ok:' . $err . '"}]';
+      //echo '[{"error":"' . $err . '"}]';
       echo '[{"save":"ok:' . $action . '"}]';
 return */
 
-      /// borramos los que no están
-      //$mysqli->query("DELETE FROM menu WHERE cod!='$cod'") or die($mysqli->error); 
-      //
-
+      
       $result = $mysqli->query("SELECT * FROM $folder WHERE id='$id' LIMIT 1");
       $response = array();
       while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-
-        $response[] = $row;
+$response[] = $row;
       }
       /* */
       ///
@@ -529,10 +529,10 @@ return */
         $act .= $action;
       }
 
-      /*  header("HTTP/1.1 200 OK");
+       /* header("HTTP/1.1 200 OK");
       //echo '[{"save":"ok:' . $action . '"}]';
       echo '[{"save":"ok:' . $err . '"}]';
-      return;  */
+      return; */ 
 
       //borramos los que no están
 

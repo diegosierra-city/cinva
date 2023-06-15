@@ -1,12 +1,20 @@
 export interface Cliente {
  id: number
+ tipo_documento: number
+ documento: string
  nombre: string
- nit: string
+ nombre2: string
+ apellido: string
+ apellido2: string
+ nombre_comercial: string
  pais: string
+ departamento: string
  ciudad: string
+ telefono: string
+ celular: string
  direccion: string
- telefono: number
- contacto: string
- cargo_contacto: string
+ email: string
+ redes_sociales: string 
+ tipo_cliente: number
  activo: boolean
 }

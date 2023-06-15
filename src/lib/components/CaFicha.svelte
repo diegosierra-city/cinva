@@ -221,6 +221,19 @@ const newElemento: Objeto[] = listElemento.slice(1).map(function(subArray) {
 
 
 	}
+
+	$: console.log('ele',elemento)
+	/* if(elemento){
+		let arrayElemento= [elemento]
+		arrayElemento = arrayElemento.map((item:any) => {
+      return {
+        ...item,
+        value: parseFloat(item.value)
+      };
+    });	
+				elemento=arrayElemento[0]
+	} */
+	
 </script>
 
 <button
@@ -271,10 +284,17 @@ const newElemento: Objeto[] = listElemento.slice(1).map(function(subArray) {
 								<option value={proveedor.cod}>{proveedor.proveedor}</option>
 							{/each}
 						</select>
+						{:else if item[0] === 'tipo_cliente'}
+						<select class="inputA" bind:value={item[1]}>
+							{#each Clientes as cliente}
+								<!-- content here -->
+								<option value={cliente.cod}>{cliente.cliente}</option>
+							{/each}
+						</select>
 					{:else if item[0] === 'activo'}
 						<select class="inputA" bind:value={item[1]}>
-							<option value="true">Activo</option>
-							<option value="false">Inactivo</option>
+							<option value={true}>Activo</option>
+							<option value={false}>Inactivo</option>
 						</select>
 					{:else if typeof item[1] === 'number'}
 						<!-- content here -->
