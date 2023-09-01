@@ -9,6 +9,7 @@ export interface Cliente {
  nombre_comercial: string
  pais: string
  departamento: string
+ ciudad_cod: number
  ciudad: string
  telefono: string
  celular: string

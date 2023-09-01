@@ -73,10 +73,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
       $archivoName = 'excelProveedores.xlsx';
       $folder = 'ca_proveedores';
       $orden = 'nombre';
-    }else if ($archivo == 2) {
+    } else if ($archivo == 2) {
       $archivoName = 'excelClientes.xlsx';
       $folder = 'ca_clientes';
       $orden = 'nombre,apellido';
+    }else if ($archivo == 3) {
+      $archivoName = 'excelServicios.xlsx';
+      $folder = 'ca_servicios';
+      $orden = 'servicio';
+    }else if ($archivo == 4) {
+      $archivoName = 'excelHoteles.xlsx';
+      $folder = 'ca_hoteles';
+      $orden = 'hotel';
     }
 
     if (!$archivoName) {
@@ -155,8 +163,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
         if ($campo2 != '') {
           $result = $mysqli->query("SELECT * FROM $folder WHERE $campo='$campoV' AND $campo2='$campoV2' ORDER BY $orden") or die($mysqli->error);
-        } else if ($campo != '') {
+        } else if ($campo != '' && $campoV!=-1) {
           $result = $mysqli->query("SELECT * FROM $folder WHERE $campo='$campoV' ORDER BY $orden") or die($mysqli->error);
+        }else if ($campo != '' && $campoV==-1) {
+          //echo "SELECT * FROM $folder WHERE $campo!='' ORDER BY $orden";
+          $result = $mysqli->query("SELECT * FROM $folder WHERE $campo!='' ORDER BY $orden") or die($mysqli->error);
         } else {
           $result = $mysqli->query("SELECT * FROM $folder ORDER BY $orden") or die($mysqli->error);
         }
@@ -179,6 +190,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
         header("HTTP/1.1 200 OK");
         //echo $fecha.'*'.$empresa_id;
+        echo json_encode($response);
+      }
+    }else if ($ref == 'load-list-filter-ciudad') {
+
+      $user_id = $_GET['user_id'];
+      $time = $_GET['time_life'];
+      $token = $_GET['token'];
+
+      $tokenBase = md5($user_id . $time . $key_encrypt);
+
+      if ($tokenBase != $token) {
+        header("HTTP/1.1 202 ERROR");
+        echo '{"error":"Error in token:' . $tokenBase . '-' . $token . '"}';
+      } else {
+
+        $folder = $_GET['folder'];
+        $campo = $_GET['campo'];
+
+        /// load categories
+        $response = array();
+
+        $result = $mysqli->query("SELECT id, $campo AS `name`,ciudad_cod FROM $folder WHERE activo='1' ORDER BY `name`");
+$err= $mysqli->error;
+
+        while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+       $response[] = $row;
+        }
+
+        header("HTTP/1.1 200 OK");
+        //echo '[{"error-'.$folder.'":"'.$err.'"}]';
         echo json_encode($response);
       }
     }
@@ -326,17 +367,17 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $err = $mysqli->error;
       }
 
-       /* header("HTTP/1.1 200 OK");
+      /* header("HTTP/1.1 200 OK");
       //echo '+'.$action.'*';
       //echo '[{"error":"' . $err . '"}]';
       echo '[{"save":"ok:' . $action . '"}]';
 return */
 
-      
+
       $result = $mysqli->query("SELECT * FROM $folder WHERE id='$id' LIMIT 1");
       $response = array();
       while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-$response[] = $row;
+        $response[] = $row;
       }
       /* */
       ///
@@ -529,10 +570,10 @@ $response[] = $row;
         $act .= $action;
       }
 
-       /* header("HTTP/1.1 200 OK");
+      /* header("HTTP/1.1 200 OK");
       //echo '[{"save":"ok:' . $action . '"}]';
       echo '[{"save":"ok:' . $err . '"}]';
-      return; */ 
+      return; */
 
       //borramos los que no están
 
@@ -1468,7 +1509,10 @@ $response[] = $row;
       $h = 600;
       if ($folder == 'ca_users') {
         $w = 600;
+      }else if($folder == 'ca_servicios') {
+        $w = 1200;
       }
+
       $hM = ($h / 2);
       $wM = ($w / 2);
 
@@ -1476,18 +1520,20 @@ $response[] = $row;
       $error = '';
       if ($_FILES['uploadFile']['name'] != '') {
         if ($_FILES['uploadFile']['type'] != "image/pjpeg" and $_FILES['uploadFile']['type'] != "image/jpeg" and $_FILES['uploadFile']['type'] != "image/png") {
-          $error = 'Sólo se acepta JPG or PNG';
+          $error = 'Sólo se acepta JPG o PNG';
         } else {
           //
           $path = $_FILES['uploadFile']['name'];
           $ext = pathinfo($path, PATHINFO_EXTENSION);
           $ext = strtolower($ext);
           //
-          if ($folder != 'ca_users') {
-            $path_preview = $id . '_' . $position . '.' . $ext . '?t=' . time();
-          } else if ($folder == 'ca_users') {
+          if ($folder == 'ca_users' || $folder == 'ca_servicios') {
             $path_preview = $id . '.' . $ext . '?t=' . time();
-          }
+            $pathBase=$id;
+          }else {
+            $path_preview = $id . '_' . $position . '.' . $ext . '?t=' . time();
+            $pathBase=$id . '_' . $position;
+          } 
           //
           include('verot-upload/src/class.upload.php');
           ini_set("max_execution_time", 0);
@@ -1495,7 +1541,7 @@ $response[] = $row;
           if ($handle->uploaded) {
             ///PC version
 
-            $handle->file_new_name_body = $id . '_' . $position;
+            $handle->file_new_name_body = $pathBase;
             $handle->file_overwrite = true;
 
             $handle->image_resize          = true;
@@ -1513,7 +1559,7 @@ $response[] = $row;
 
             $handle->process('../maker-files/imagenes/' . $folder . '/');
             /// Movil Version
-            $handle->file_new_name_body = 'M' . $id . '_' . $position;
+            $handle->file_new_name_body = 'M' . $pathBase;
             $handle->image_resize          = true;
             $handle->file_overwrite = true;
             $handle->image_x               = $wM;
@@ -1546,7 +1592,8 @@ $response[] = $row;
         }
 
         $action = "UPDATE $folder SET `$row_name`='$path_preview' WHERE id='$id'";
-        $mysqli->query($action) or die($mysqli->error);
+        $mysqli->query($action);
+        $err= $mysqli->error;
         //
         $result = $mysqli->query("SELECT * FROM $folder WHERE id='$id' LIMIT 1");
         $new_cont = array();
@@ -1561,9 +1608,10 @@ $response[] = $row;
         //  
         header("HTTP/1.1 200 OK");
         //echo '[{"' . $row_name . '":"' . $path_preview . '"}]';
+        //echo '[{"error":"' . $err . '"}]';
         echo json_encode($new_cont);
       } else {
-        header("HTTP/1.1 202 OK");
+        header("HTTP/1.1 400 ERROR");
         echo '[{"error":"' . $error . '"}]';
       }
     }
@@ -1596,69 +1644,68 @@ $response[] = $row;
         //$target_file = $target_dir . basename($_FILES["uploadFile"]["name"]);
         $target_file = $target_dir . $file;
         if (move_uploaded_file($_FILES["uploadFile"]["tmp_name"], $target_file)) {
-         /// despues de subirlo se lee
-         include_once 'PHPExcel.php';
-         include 'PHPExcel/IOFactory.php';
-         
-// Leer el archivo de Excel
-$objReader = PHPExcel_IOFactory::createReader('Excel2007');
-$objPHPExcel = $objReader->load($target_file);
+          /// despues de subirlo se lee
+          include_once 'PHPExcel.php';
+          include 'PHPExcel/IOFactory.php';
 
-// Obtener la hoja activa y leer la primera fila para obtener los nombres de los campos
-$worksheet = $objPHPExcel->getActiveSheet();
-$highestColumn = $worksheet->getHighestColumn();
-$highestRow = $worksheet->getHighestRow();
-$fields = array();
-for ($col = 'A'; $col <= $highestColumn; $col++) {
-    $value = $worksheet->getCell($col . 1)->getValue();
-    $fields[] = $value;
-}
+          // Leer el archivo de Excel
+          $objReader = PHPExcel_IOFactory::createReader('Excel2007');
+          $objPHPExcel = $objReader->load($target_file);
 
-// Leer las filas restantes y procesarlas
-for ($row = 2; $row <= $highestRow; $row++) {
-    $values = array();
-    for ($col = 'A'; $col <= $highestColumn; $col++) {
-        $value = $worksheet->getCell($col . $row)->getValue();
-        $values[] = $value;
-    }
-    $row_data = array_combine($fields, $values);
-    $id = $row_data['id'];
-    $nombre = $row_data['nombre'];
-    $email = $row_data['email'];
+          // Obtener la hoja activa y leer la primera fila para obtener los nombres de los campos
+          $worksheet = $objPHPExcel->getActiveSheet();
+          $highestColumn = $worksheet->getHighestColumn();
+          $highestRow = $worksheet->getHighestRow();
+          $fields = array();
+          for ($col = 'A'; $col <= $highestColumn; $col++) {
+            $value = $worksheet->getCell($col . 1)->getValue();
+            $fields[] = $value;
+          }
 
-    // Verificar si el registro ya existe
-    $query = "SELECT * FROM $folder WHERE id = $id";
-    $result = $mysqli->query($query);
-
-    if ($result->num_rows > 0) {
-        // Actualizar el registro existente
-        $set_values = array();
-        foreach ($fields as $field_name) {
-            if ($field_name != 'id') {
-                $set_values[] = "$field_name = '" . $row_data[$field_name] . "'";
+          // Leer las filas restantes y procesarlas
+          for ($row = 2; $row <= $highestRow; $row++) {
+            $values = array();
+            for ($col = 'A'; $col <= $highestColumn; $col++) {
+              $value = $worksheet->getCell($col . $row)->getValue();
+              $values[] = $value;
             }
-        }
-        $set_values_str = implode(', ', $set_values);
-        $query = "UPDATE $folder SET $set_values_str WHERE id = $id";
-        $mysqli->query($query);
-    } else {
-        // Insertar un nuevo registro
-        $field_names_str = implode(', ', $fields);
-        $values_str = implode("', '", $values);
-        $query = "INSERT INTO $folder ($field_names_str) VALUES ('$values_str')";
-        $mysqli->query($query);
-    }
-}
+            $row_data = array_combine($fields, $values);
+            $id = $row_data['id'];
+            $nombre = $row_data['nombre'];
+            $email = $row_data['email'];
+
+            // Verificar si el registro ya existe
+            $query = "SELECT * FROM $folder WHERE id = $id";
+            $result = $mysqli->query($query);
+
+            if ($result->num_rows > 0) {
+              // Actualizar el registro existente
+              $set_values = array();
+              foreach ($fields as $field_name) {
+                if ($field_name != 'id') {
+                  $set_values[] = "$field_name = '" . $row_data[$field_name] . "'";
+                }
+              }
+              $set_values_str = implode(', ', $set_values);
+              $query = "UPDATE $folder SET $set_values_str WHERE id = $id";
+              $mysqli->query($query);
+            } else {
+              // Insertar un nuevo registro
+              $field_names_str = implode(', ', $fields);
+              $values_str = implode("', '", $values);
+              $query = "INSERT INTO $folder ($field_names_str) VALUES ('$values_str')";
+              $mysqli->query($query);
+            }
+          }
           header("HTTP/1.1 200 OK");
-        echo '[{"upload":"Se a subido el archivo '.$file.'"}]';
+          echo '[{"upload":"Se a subido el archivo ' . $file . '"}]';
         } else {
           header("HTTP/1.1 400 ERROR");
-        echo '[{"error":"Ha ocurrido un error al subir el archivo"}]';
-          
+          echo '[{"error":"Ha ocurrido un error al subir el archivo"}]';
         }
       }
     }
-  }else if ($ref == 'upload-archivo') { /// for pages
+  } else if ($ref == 'upload-archivo') { /// for pages
 
     $user_id = $_POST['user_id'];
     $time_life = $_POST['time_life'];
@@ -1679,32 +1726,119 @@ for ($row = 2; $row <= $highestRow; $row++) {
       // header("HTTP/1.1 200 OK");
       // echo '[{"upload":"' . $_FILES['uploadFile']['size'] . '"}]';
       // return;
+
+
       if ($_FILES['uploadFile']['size'] > 10000000) {
         header("HTTP/1.1 400 ERROR");
         echo '[{"error":"El archivo pesa más de 10 Megas"}]';
       } else {
         $filename = $_FILES['uploadFile']['name'];
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $extension=strtolower($extension);
         //
         $target_dir = "../maker-files/archivos/"; // directorio donde se guardará el archivo subido
         //$target_file = $target_dir . basename($_FILES["uploadFile"]["name"]);
-        $target_file = $target_dir .limpiar_tildes($ref).'.'.$extension;
-        if (move_uploaded_file($_FILES["uploadFile"]["tmp_name"], $target_file)) {
-         /// despues de subirlo se registra
-         $archivo=limpiar_tildes($ref).'.'.$extension;
-         $action = "INSERT INTO ca_archivos (tabla,tabla_id,ref,archivo,fecha) VALUES ('$folder', '$folder_id', '$ref','$archivo', '$hoy')";
-         $mysqli->query($action) or die($mysqli->error);
+        $target_file = $target_dir .$folder_id.'-'. limpiar_tildes($ref) . '.' . $extension;
+        $target_file_name = $folder_id.'-'.limpiar_tildes($ref) . '.' . $extension;
+$target_file_name_base = $folder_id.'-'.limpiar_tildes($ref);
+        
+        if (strtolower($ref) === 'logo') {
+          ///inicio logo
+          $w = 800;
+          $h = 600;
 
-          header("HTTP/1.1 200 OK");
-        echo '[{"upload":"Se a subido el archivo: '.$ref.'"}]';
-        } else {
-          header("HTTP/1.1 400 ERROR");
-        echo '[{"error":"Ha ocurrido un error al subir el archivo"}]';
+          $hM = ($h / 2);
+          $wM = ($w / 2);
+
+          /// VErot Upload
+          $error = '';
           
+            if ($_FILES['uploadFile']['type'] != "image/pjpeg" and $_FILES['uploadFile']['type'] != "image/jpeg" and $_FILES['uploadFile']['type'] != "image/png") {
+              $error = 'Sólo se acepta JPG o PNG';
+            } else {
+
+              //
+              include('verot-upload/src/class.upload.php');
+              ini_set("max_execution_time", 0);
+              $handle = new \Verot\Upload\Upload($_FILES['uploadFile']);
+              if ($handle->uploaded) {
+                ///PC version
+
+                $handle->file_new_name_body = $target_file_name_base;
+                $handle->file_overwrite = true;
+
+                $handle->image_resize          = true;
+                $handle->image_x               = $w;
+
+                $handle->image_y               = $h;
+                $handle->image_ratio_crop       = true;
+
+                if ($extension == 'png') {
+                  $handle->png_compression = 9;
+                } else {
+                  $handle->jpeg_quality = 85;
+                }
+
+                $handle->process($target_dir);
+                /// Movil Version
+                $handle->file_new_name_body = 'M' . $target_file_name_base;
+                $handle->image_resize          = true;
+                $handle->file_overwrite = true;
+                $handle->image_x               = $wM;
+                //$handle->image_ratio_y         = true;
+
+                $handle->image_y               = $hM;
+                $handle->image_ratio_crop       = true;
+
+                if ($extension == 'png') {
+                  $handle->png_compression = 9;
+                } else {
+                  $handle->jpeg_quality = 85;
+                }
+
+                $handle->process($target_dir);
+              } else {
+                ///error
+                $error = 'Error al subir la imagen';
+              }
+            }
+         
+
+          if ($error === '') {
+            if (move_uploaded_file($_FILES["uploadFile"]["tmp_name"], $target_file)) {
+              /// despues de subirlo se registra
+              $archivo = $target_file_name;
+              $action = "INSERT INTO ca_archivos (tabla,tabla_id,ref,archivo,fecha) VALUES ('$folder', '$folder_id', '$ref','$archivo', '$hoy')";
+              $mysqli->query($action) or die($mysqli->error);
+
+              header("HTTP/1.1 200 OK");
+              echo '[{"upload":"Se a subido el archivo: ' . $ref . '"}]';
+            } else {
+              header("HTTP/1.1 400 ERROR");
+              echo '[{"error":"Ha ocurrido un error al subir el archivo"}]';
+            }
+          } else {
+            header("HTTP/1.1 202 OK");
+            echo '[{"error":"' . $error . '"}]';
+          }
+          ///fin logo
+        } else {
+          if (move_uploaded_file($_FILES["uploadFile"]["tmp_name"], $target_file)) {
+            /// despues de subirlo se registra
+            $archivo = $target_file_name;
+            $action = "INSERT INTO ca_archivos (tabla,tabla_id,ref,archivo,fecha) VALUES ('$folder', '$folder_id', '$ref','$archivo', '$hoy')";
+            $mysqli->query($action) or die($mysqli->error);
+
+            header("HTTP/1.1 200 OK");
+            echo '[{"upload":"Se a subido el archivo: ' . $ref . '"}]';
+          } else {
+            header("HTTP/1.1 400 ERROR");
+            echo '[{"error":"Ha ocurrido un error al subir el archivo"}]';
+          }
         }
       }
     }
-  }else if ($ref == 'delete-archivo') { /// for pages
+  } else if ($ref == 'delete-archivo') { /// for pages
 
     $user_id = $_POST['user_id'];
     $time_life = $_POST['time_life'];
@@ -1719,22 +1853,21 @@ for ($row = 2; $row <= $highestRow; $row++) {
       ///
       $archivo = $_POST['archivo'];
       $id = $_POST['id'];
-      
+
       // header("HTTP/1.1 200 OK");
       // echo '[{"upload":"' . $_FILES['uploadFile']['size'] . '"}]';
       // return;
 
       $action = "DELETE FROM ca_archivos WHERE id='$id'";
       $mysqli->query($action) or die($mysqli->error);
-///
-$ruta="../maker-files/archivos/".$archivo;
-if(file_exists($ruta)){
-  unlink($ruta);
-}
+      ///
+      $ruta = "../maker-files/archivos/" . $archivo;
+      if (file_exists($ruta)) {
+        unlink($ruta);
+      }
 
       header("HTTP/1.1 200 OK");
-        echo '[{"delete":"Se a borrado el archivo: '.$archivo.'"}]';
-       
+      echo '[{"delete":"Se a borrado el archivo: ' . $archivo . '"}]';
     }
   } else if ($ref == 'upload-product') { /// for Product
 

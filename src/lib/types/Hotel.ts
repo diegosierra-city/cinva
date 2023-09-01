@@ -1,11 +1,9 @@
-export interface Proveedor {
+export interface Hotel {
  id: number
  tipo_documento: number
  documento: string
- nombre: string
- nombre2: string
- apellido: string
- apellido2: string
+ hotel: string
+ categoria: string
  nombre_comercial: string
  pais: string
  departamento: string

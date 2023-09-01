@@ -85,3 +85,69 @@ $objWriter->save($archivo);
 header("HTTP/1.1 200 OK");
 echo '[{"excel":"actualizado '.$archivo.'"}]';
 ?>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+		{#each listElemento as item, i}
+			{#if item[0] != 'id'}
+				<!-- content here -->
+				
+					
+					{#if (item[0] !== 'ma' && item[0] !== 'mi' && item[0] !== 'ju' && item[0] !== 'vi' && item[0] !== 'sa' && item[0] !== 'do' && item[0] !== 'cma' && item[0] !== 'cmi' && item[0] !== 'cju' && item[0] !== 'cvi' && item[0] !== 'csa' && item[0] !== 'cdo' && item[0] !== 'imagen')}
+
+<div class="px-2">
+					
+					
+				
+					
+
+					{#if item[0] === 'tipo_documento' || item[0] === 'titular_tipo_documento'}
+						<select class="inputA" bind:value={item[1]}>
+							{#each Documents as documento}
+								<!-- content here -->
+								<option value={documento.cod}>{documento.doc}</option>
+							{/each}
+						</select>
+					{:else if item[0] === 'pais'}
+						<select class="inputA" bind:value={item[1]}>
+							{#each Countries as pais}
+								<!-- content here -->
+								<option value={pais.iata}>{pais.pais}</option>
+							{/each}
+						</select>
+					{:else if item[0] === 'tipo_proveedor'}
+						<select class="inputA" bind:value={item[1]}>
+							{#each Proveedores as proveedor}
+								<!-- content here -->
+								<option value={proveedor.cod}>{proveedor.proveedor}</option>
+							{/each}
+						</select>
+						{:else if item[0] === 'tipo_cliente'}
+						<select class="inputA" bind:value={item[1]}>
+							{#each Clientes as cliente}
+								<!-- content here -->
+								<option value={cliente.cod}>{cliente.cliente}</option>
+							{/each}
+						</select>
+					{:else if item[0] === 'activo'}
+						<select class="inputA" bind:value={item[1]}>
+							<option value={true}>Activo</option>
+							<option value={false}>Inactivo</option>
+						</select>
+
+					{:else if typeof item[1] === 'number'}
+						<!-- content here -->
+						<input type="number" class="inputA" bind:value={item[1]} />
+					{:else}
+						<!-- else content here -->
+						<input type="text" class="inputA" bind:value={item[1]} />
+					{/if}
+</div>
+						{/if}
+				
+			
+
+			{/if}
+		{:else}
+			<!-- empty list -->
+		{/each}
+	</div>

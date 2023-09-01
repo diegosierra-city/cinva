@@ -310,7 +310,7 @@
 		>
 	</div>
 
-	<h3>{elemento.nombre}</h3>
+	<h3>{elemento.hotel}</h3>
 	{#if logo}
 		<img src={`${urlFiles}archivos/${logo}`} alt="logo" class="w-40 rounded-md shadow-md border-1 border-silver">
 	{/if}

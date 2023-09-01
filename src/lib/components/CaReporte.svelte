@@ -15,7 +15,7 @@
 	export let showVisita: boolean;
 	export let listMaquinas: Array<Maquina> = [];
 	export let listClientes: Array<Cliente> = [];
-	export let listTecnicos: Array<Tecnico> = [];
+	//export let listTecnicos: Array<Tecnico> = [];
 	export let listProgramacion: Array<Visita> = [];
 	export let posicionReporte: number;
 

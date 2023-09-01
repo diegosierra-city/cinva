@@ -28,6 +28,7 @@
 		}
 	}
 
+	//console.log('yy',$userNow)
 	/*
 1. Clientes - $500.000
 2. Proveedores, Hoteles - $500.000
@@ -89,19 +90,6 @@
 					</button>
 				</li>
 
-				<li class:boton_admin_active={$moduleAdmin === 'Hoteles'}>
-					<button
-						class="flex items-center"
-						on:click={() => {
-							$moduleAdmin = 'Hoteles';
-						}}
-					>
-						<i class="fa fa-hotel" />
-
-						<span class="text-sm ml-2 hidden md:block text-black">Hoteles</span>
-					</button>
-				</li>
-
 				<li class:boton_admin_active={$moduleAdmin === 'Servicios'}>
 					<button
 						class="flex items-center"
@@ -115,6 +103,45 @@
 					</button>
 				</li>
 
+			
+
+				<li class:boton_admin_active={$moduleAdmin === 'Hoteles'}>
+					<button
+						class="flex items-center"
+						on:click={() => {
+							$moduleAdmin = 'Hoteles';
+						}}
+					>
+						<i class="fa fa-hotel" />
+
+						<span class="text-sm ml-2 hidden md:block text-black">Hoteles</span>
+					</button>
+				</li>
+
+				<li class:boton_admin_active={$moduleAdmin === 'Temporadas'}>
+					<button
+						class="flex items-center"
+						on:click={() => {
+							$moduleAdmin = 'Temporadas';
+						}}
+					>
+						<i class="fa fa-calendar" />
+
+						<span class="text-sm ml-2 hidden md:block text-black">Temporadas</span>
+					</button>
+				</li>
+<li class:boton_admin_active={$moduleAdmin === 'Tarifas'}>
+					<button
+						class="flex items-center"
+						on:click={() => {
+							$moduleAdmin = 'Tarifas';
+						}}
+					>
+						<i class="fa fa-dollar" />
+
+						<span class="text-sm ml-2 hidden md:block text-black">Tarifas Hoteles</span>
+					</button>
+				</li>
 				<li class:boton_admin_active={$moduleAdmin === 'Paquetes'}>
 					<button
 						class="flex items-center"
