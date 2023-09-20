@@ -702,7 +702,13 @@ return */
         if ($condicion != '') {
           $condicion .= "AND";
         }
-        $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod'") or die($mysqli->error);
+
+        if($folder=='ca_temporadas'){
+$mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!='Baja'") or die($mysqli->error);
+        }else{
+         $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod'") or die($mysqli->error); 
+        }
+        
       }
 
 
