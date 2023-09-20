@@ -18,8 +18,9 @@
 	let message: Message;
 
 	let listServicios: Array<Servicio> = [];
-
+	let listAllServicios: Array<Servicio> = [];	
 	let listProveedores: Array<ListFilterCiudad>;
+		let listCities: Array<any> =[]
 
 	const urlAPI = $apiKey.urlAPI;
 	const urlFiles = $apiKey.urlFiles;
@@ -34,6 +35,32 @@
 			$userNow.token +
 			'&folder=ca_servicios&orden=nombre'
 	); //&campo=tipo&campoV=tecnico
+
+	// Función de comparación personalizada
+function ordenarCiudadServicio(a:any, b:any) {
+  // Primero, compara por ciudad
+  if (a.ciudad < b.ciudad) return -1;
+  if (a.ciudad > b.ciudad) return 1;
+
+  // Si las ciudades son iguales, compara por servicio
+  if (a.tipo_servicio < b.tipo_servicio) return -1;
+  if (a.tipo_servicio > b.tipo_servicio) return 1;
+
+  // Si ambas ciudades y servicios son iguales, no hay cambio en el orden
+  return 0;
+}
+
+let city:number = 0
+function filtrarPorCiudad() {
+	let ciudadDeseada:number= city
+	if(ciudadDeseada==0){
+		listServicios= listAllServicios
+	}else{
+		listServicios= listAllServicios.filter((objeto:any) => objeto.ciudad_cod === ciudadDeseada);
+	}
+	
+}
+
 
 	const loadServicios = async () => {
 		await fetch(
@@ -51,7 +78,22 @@
 				console.log('recibiendo:');
 
 				listServicios = result;
+				listServicios.sort(ordenarCiudadServicio);
+				listAllServicios=listServicios
 				console.log('LoadServicios', listServicios);
+				//
+				// Crear un conjunto para almacenar ciudades únicas
+const ciudadesUnicasSet = new Set();
+
+// Filtrar y almacenar ciudades únicas en el conjunto
+listServicios.forEach(obj => {
+  ciudadesUnicasSet.add(JSON.stringify({ ciudad_cod: obj.ciudad_cod, ciudad: obj.ciudad }));
+});
+
+// Convertir el conjunto de nuevo en un array y ordenarlo alfabéticamente
+const ciudadesUnicas = Array.from(ciudadesUnicasSet).map((str:any) => JSON.parse(str)).sort((a, b) => a.ciudad.localeCompare(b.ciudad));
+
+listCities=[...ciudadesUnicas]
 			})
 			.catch((error) => console.log(error.message));
 	};
@@ -358,6 +400,15 @@
 				}}
 			/>
 		</div>
+
+		<div>Ciudad: <select class="inputA w-40" bind:value={city} on:change={filtrarPorCiudad}>
+			<option value={0}>Todas</option>
+		{#each listCities as ct}
+			<option value={ct.ciudad_cod}>{ct.ciudad}</option>
+		{/each}
+		</select>
+		</div>
+
 		<table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
 			<thead class="text-xs text-white uppercase bg-primary dark:bg-gray-700 dark:text-gray-400">
 				<th scope="col" class="" />

@@ -192,6 +192,124 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         //echo $fecha.'*'.$empresa_id;
         echo json_encode($response);
       }
+    }else if ($ref == 'load-list-tarifas') {
+
+      $user_id = $_GET['user_id'];
+      $time = $_GET['time_life'];
+      $token = $_GET['token'];
+
+      $tokenBase = md5($user_id . $time . $key_encrypt);
+
+      if ($tokenBase != $token) {
+        header("HTTP/1.1 202 ERROR");
+        echo '{"error":"Error in token:' . $tokenBase . '-' . $token . '"}';
+      } else {
+//echo '*****';
+        $city = $_GET['city'];
+        
+        /// load categories
+        $response = array();
+        $listHoteles= array();
+        $listTemporadas= array();
+        //
+        $h=0;
+        $resultC = $mysqli->query("SELECT id, hotel FROM ca_hoteles WHERE ciudad_cod='$city' ORDER BY hotel") or die($mysqli->error);
+
+        while ($rowC = $resultC->fetch_array(MYSQLI_ASSOC)) {
+          $h++;
+       $hotel_id=$rowC['id'];
+       $listHoteles[$hotel_id]=$rowC['hotel'];
+       //echo   $rowC['hotel'].' - '.$hotel_id.'<br>';
+        //1 listado de temporadas
+        $result = $mysqli->query("SELECT * FROM ca_temporadas WHERE ciudad_cod='0' GROUP BY temporada ORDER BY temporada") or die($mysqli->error);
+
+        while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+$temporada_id=$row['id']; 
+if($h==1) $listTemporadas[$temporada_id]=$row['temporada'];
+$rT = $mysqli->query("SELECT * FROM ca_hotel_tarifas WHERE hotel_id='$hotel_id' AND temporada_id='$temporada_id' LIMIT 1") or die($mysqli->error);
+$rowT = $rT->fetch_array();
+
+if(mysqli_num_rows($rT)===0){
+ $rowT['id']=0;
+  $rowT['hotel_id']=$hotel_id;
+  $rowT['temporada_id']=$temporada_id;
+  $rowT['pax']=0;
+$rowT['pax1']=0;
+$rowT['pax2']=0;
+$rowT['pax3']=0;
+$rowT['pax4']=0;
+$rowT['nino']=0;
+$rowT['bebe']=0;
+}
+
+$response[] = $rowT;
+        }
+
+        ///
+        $result2 = $mysqli->query("SELECT * FROM ca_temporadas WHERE ciudad_cod='$city' ORDER BY temporada") or die($mysqli->error);
+
+        while ($row2 = $result2->fetch_array(MYSQLI_ASSOC)) {
+  $temporada_id=$row2['id'];
+  if($h==1) $listTemporadas[$temporada_id]=$row2['temporada'];
+
+          $rT = $mysqli->query("SELECT * FROM ca_hotel_tarifas WHERE hotel_id='$hotel_id' AND temporada_id='$temporada_id' LIMIT 1") or die($mysqli->error);
+$rowT = $rT->fetch_array();
+
+if(mysqli_num_rows($rT)===0){
+ $rowT['id']=0;
+  $rowT['hotel_id']=$hotel_id;
+  $rowT['temporada_id']=$temporada_id;
+  $rowT['pax']=0;
+$rowT['pax1']=0;
+$rowT['pax2']=0;
+$rowT['pax3']=0;
+$rowT['pax4']=0;
+$rowT['nino']=0;
+$rowT['bebe']=0;
+}
+        $response[] = $rowT;
+        }
+
+      }
+$res=array();
+$res[]=$response;
+$res[]=$listHoteles;
+$res[]=$listTemporadas;
+
+        header("HTTP/1.1 200 OK");
+        //echo $fecha.'*'.$empresa_id;
+        echo json_encode($res);
+      }
+    }else if ($ref == 'load-list-tarifas-cities') {
+
+      $user_id = $_GET['user_id'];
+      $time = $_GET['time_life'];
+      $token = $_GET['token'];
+
+      $tokenBase = md5($user_id . $time . $key_encrypt);
+
+      if ($tokenBase != $token) {
+        header("HTTP/1.1 202 ERROR");
+        echo '{"error":"Error in token:' . $tokenBase . '-' . $token . '"}';
+      } else {
+
+               
+        /// load categories
+        $response = array();
+        //listado ciudades
+        $r = $mysqli->query("SELECT ciudad_cod,ciudad FROM ca_hoteles GROUP BY ciudad_cod ORDER BY ciudad") or die($mysqli->error);
+
+        while ($row = $r->fetch_array(MYSQLI_ASSOC)) {
+        $response[] = $row;
+       
+
+      }
+
+
+        header("HTTP/1.1 200 OK");
+        //echo $fecha.'*'.$empresa_id;
+        echo json_encode($response);
+      }
     }else if ($ref == 'load-list-filter-ciudad') {
 
       $user_id = $_GET['user_id'];
@@ -499,6 +617,7 @@ return */
       }
 
       $utilizar_cod = 'no';
+      if($folder=='ca_temporadas') $utilizar_cod = 'si';
 
       foreach ($list as $request) {
 
@@ -533,7 +652,9 @@ return */
 
         $act = '';
 
-        if (($id == 0 or $id > 1000000) and $ejecutar == 'si') {
+        if($orden!='' && $orden!= 'id' && $request[$orden] == '') $jecutar='no';
+
+        if (($id == 0 or $id > 1000000) && $ejecutar == 'si') {
           ///Nuevo Registro
           if ($utilizar_cod == 'si') {
             $rA = $insertA . 'cod';

@@ -11,6 +11,7 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 	import CaServicios from '$lib/components/CaServicios.svelte';
 	import CaHoteles from '$lib/components/CaHoteles.svelte';
 	import CaTemporadas from '$lib/components/CaTemporadas.svelte';
+	import CaTarifas from '$lib/components/CaTarifas.svelte';
 
 	// import PmsHotel from '$lib/components/PmsHotel.svelte';
 	// import PmsHabitaciones from '$lib/components/PmsHabitaciones.svelte';
@@ -100,6 +101,9 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 
 {:else if $moduleAdmin == 'Hoteles'}
 <CaHoteles />
+
+{:else if $moduleAdmin == 'Tarifas'}
+<CaTarifas />
 {/if}
 
 <footer class="fixed bottom-0 p-1">

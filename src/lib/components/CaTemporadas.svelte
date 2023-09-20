@@ -115,10 +115,10 @@ let listTemporadasEspecial: Array<Temporada> = [];
 
 	const saveTemporadas = async (type:string) => {
 		console.log(listTemporadas);
-		let listFinal=[...listTemporadas]
-		if(type=='especial'){
+		let listFinal=[...listTemporadas,...listTemporadasEspecial]
+		/* if(type=='especial'){
 			listFinal=[...listTemporadasEspecial]
-		}
+		} */
 		await fetch(urlAPI + '?ref=save-list', {
 			method: 'POST', //POST - PUT - DELETE
 			body: JSON.stringify({
@@ -151,6 +151,24 @@ let listTemporadasEspecial: Array<Temporada> = [];
 		//  });
 	};
 
+	function deleteTemporada(position:number,list:string){
+		if(confirm('Desea borrar esta temporada con todas las tarifas asociadas a ella?')){
+if(list=='normal'){
+	///quitamos el objeto del array de la posicion indicada
+	listTemporadas = listTemporadas.filter(function(element, index) {
+  return index !== position;
+});
+	
+}else{
+		listTemporadasEspecial = listTemporadasEspecial.filter(function(element, index) {
+  return index !== position;
+});
+}
+saveTemporadas(list)
+
+		}
+	}
+
 	let folder = 'ca_temporadas';
 	let showTemporada: boolean = false;
 	let temporadaActual: Temporada = newTemporada;
@@ -181,9 +199,10 @@ let listTemporadasEspecial: Array<Temporada> = [];
 	}
 
 	function handleCitySelect(cod: number, ciu: string, position: number) {
+		//alert(cod+'-'+ciu+'-'+position)
 		//console.log('Cod',cod)
-		listTemporadas[position].ciudad_cod = cod;
-		listTemporadas[position].ciudad = ciu;
+		listTemporadasEspecial[position].ciudad_cod = cod;
+		listTemporadasEspecial[position].ciudad = ciu;
 		filtroCiudades = [];
 	}
 
@@ -207,7 +226,7 @@ let listTemporadasEspecial: Array<Temporada> = [];
 			>
 		</div>
 
-		
+		*Temporada base: <strong>Baja</strong> - se aplica para todas las fechas en las que no se defina otra temporada
 		<table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
 			<thead class="text-xs text-white uppercase bg-primary dark:bg-gray-700 dark:text-gray-400">
 				<th scope="col" class="" />
@@ -220,34 +239,39 @@ let listTemporadasEspecial: Array<Temporada> = [];
 				{#if listTemporadas.length>0}
 					
 				{#each listTemporadas as temporada, i}
-					<tr class="bg-white border-b hover:bg-aliceblue align-top">
-						<td class="font-bold">{i + 1}</td>
-						<td>
-							<input
-								type="text"
-								class="inputA w-24" placeholder="nombre"
-								bind:value={temporada.temporada}
-							/>
-							</td>
-						<td>
-							<input
-							type="date"
-							class="inputA w-24" placeholder="Fecha"
-							bind:value={temporada.fecha_inicial}
+				{#if temporada.temporada!=='Baja'}
+				<tr class="bg-white border-b hover:bg-aliceblue align-top">
+					<td class="font-bold">{i + 1}</td>
+					<td>
+						<input
+							type="text"
+							class="inputA w-28" placeholder="nombre"
+							bind:value={temporada.temporada}
 						/>
 						</td>
-						<td>
-							<input
-							type="date"
-							class="inputA w-24" placeholder="Fecha"
-							bind:value={temporada.fecha_final}
-						/>
+					<td>
+						<input
+						type="date"
+						class="inputA w-28" placeholder="Fecha"
+						bind:value={temporada.fecha_inicial}
+					/>
+					</td>
+					<td>
+						<input
+						type="date"
+						class="inputA w-28" placeholder="Fecha"
+						bind:value={temporada.fecha_final}
+					/>
+					</td>
+					
+					<td class="text-center text-red text-lg">
+						<button on:click={()=>deleteTemporada(i,'normal')}><i class="fa fa-trash" /></button>
 						</td>
-						
-						<td class="text-center">borrar</td>
-					</tr>
+				</tr>
+				{/if}
+					
 				{:else}
-					Sin registros
+					Sin Registros
 				{/each}
 
 					{/if}
@@ -285,7 +309,7 @@ let listTemporadasEspecial: Array<Temporada> = [];
 						<td>
 							<input
 								type="text"
-								class="inputA w-24" placeholder="nombre"
+								class="inputA w-28" placeholder="nombre"
 								bind:value={temporada.temporada}
 							/>
 							</td>
@@ -333,19 +357,21 @@ let listTemporadasEspecial: Array<Temporada> = [];
 						<td>
 							<input
 							type="date"
-							class="inputA w-24" placeholder="Fecha"
+							class="inputA w-28" placeholder="Fecha"
 							bind:value={temporada.fecha_inicial}
 						/>
 						</td>
 						<td>
 							<input
 							type="date"
-							class="inputA w-24" placeholder="Fecha"
+							class="inputA w-28" placeholder="Fecha"
 							bind:value={temporada.fecha_final}
 						/>
 						</td>
 						
-						<td class="text-center">borrar</td>
+						<td class="text-center text-red text-lg">
+							<button on:click={()=>deleteTemporada(i,'especial')}><i class="fa fa-trash" /></button>
+						</td>
 					</tr>
 				{:else}
 					Sin registros
