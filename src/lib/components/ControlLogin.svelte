@@ -71,7 +71,7 @@ import {base} from '$app/paths'
 	<div
 		class="col-span-6 bg-white shadow-lg rounded lg:px-10 sm:px-6 sm:py-10 px-2 py-6"
 	>
-	<img src="/LogoCinva80.png" class="mx-auto" alt="">
+	<img src="{base}/LogoCinva80.png" class="mx-auto" alt="">
 		<p class="text-2xl font-bold leading-6 text-primary mt-4">Ingreso</p>
 
 		<form on:submit|preventDefault={login_run}>

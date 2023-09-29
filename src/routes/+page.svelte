@@ -80,7 +80,7 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 
 <svelte:head>
 	<title>Cinva Control</title>
-	<meta name="description" content="Sistema para Control de Agencia de Good Trips Colombia" />
+	<meta name="description" content="Sistema para Control de procesos internos de Cinva Publicidad" />
 	<link rel="stylesheet" href="./css/font-awesome-4.7.0/css/font-awesome.css" />
 </svelte:head>
 
