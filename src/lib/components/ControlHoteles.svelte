@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { Proveedor } from '$lib/types/Proveedor';
+	import type { Hotel } from '$lib/types/Hotel';
 	import { onMount } from 'svelte/internal';
 	import { cookie_info, apiKey, userNow } from '../../store';
 	import { Moon } from 'svelte-loading-spinners';
 	import Messages from '$lib/components/Messages.svelte';
 	import type { Message } from '$lib/types/Message';
-	import CaFicha from './CaFicha.svelte';
+	import ControlHotel from './ControlHotel.svelte';
 	import Fuse from 'fuse.js';
 	import type { City } from '$lib/utilities/Cities';
 	import { Cities } from '$lib/utilities/Cities';
@@ -13,7 +13,7 @@
 	let m_show: boolean = false;
 	let message: Message;
 
-	let listProveedores: Array<Proveedor> = [];
+	let listHoteles: Array<Hotel> = [];
 
 	const urlAPI = $apiKey.urlAPI;
 	const urlFiles = $apiKey.urlFiles;
@@ -26,10 +26,10 @@
 			$userNow.user_time_life +
 			'&token=' +
 			$userNow.token +
-			'&folder=ca_proveedores&orden=nombre'
+			'&folder=cinva_hoteles&orden=nombre'
 	); //&campo=tipo&campoV=tecnico
 
-	const loadProveedores = async () => {
+	const loadHoteles = async () => {
 		await fetch(
 			urlAPI +
 				'?ref=load-list&user_id=' +
@@ -38,63 +38,86 @@
 				$userNow.user_time_life +
 				'&token=' +
 				$userNow.token +
-				'&folder=ca_proveedores&orden=nombre'
+				'&folder=cinva_hoteles&orden=hotel'
 		)
 			.then((response) => response.json())
 			.then((result) => {
 				console.log('recibiendo:');
 
-				listProveedores = result;
-				console.log(listProveedores);
+				listHoteles = result;
+				console.log(listHoteles);
 			})
 			.catch((error) => console.log(error.message));
 	};
 
-	let newProveedor: Proveedor;
-	newProveedor = {
-		id: Date.now(),
-		tipo_documento: 0,
-		documento: '',
-		nombre: '',
-		nombre2: '',
-		apellido: '',
-		apellido2: '',
-		nombre_comercial: '',
-		pais: 'CO',
-		departamento: 'BOGOTÁ D.C.',
-		ciudad_cod: 11001,
-		ciudad: 'Bogota D.C.',
-		telefono: '',
-		celular: '',
-		direccion: '',
-		email: '',
-		redes_sociales: '',
-		cuenta_bancaria: '',
-		banco: '',
-		tipo_cuenta: '',
-		titular_cuenta: '',
-		titular_tipo_documento: 0,
-		titular_documento: '',
-		tipo_proveedor: 0,
-		activo: true
+	let newHotel: Hotel;
+	newHotel = {
+		id: 0,
+	tipo_documento: 0,
+ documento: '',
+ hotel: '',
+ categoria: '',
+ nombre_comercial: '',
+ pais: 'CO',
+ departamento: '',
+ ciudad_cod: 0,
+ ciudad: '',
+ telefono: '',
+ celular: '',
+ direccion: '',
+ email: '',
+ redes_sociales: '',
+ cuenta_bancaria: '',
+ banco: '',
+ tipo_cuenta: '',
+ titular_cuenta: '',
+ titular_tipo_documento: 0,
+ titular_documento: '',
+ tipo_proveedor: 0,
+ activo: true
 	};
 
-	function addProveedor() {
-		newProveedor = { ...newProveedor, id: Date.now() };
-		listProveedores = [...listProveedores, newProveedor];
+	function addHotel() {
+		newHotel = { ...newHotel, id: Date.now() };
+		listHoteles = [...listHoteles, newHotel];
+		newHotel = {
+		id: 0,
+	tipo_documento: 0,
+ documento: '',
+ hotel: '',
+ categoria: '',
+ nombre_comercial: '',
+ pais: 'CO',
+ departamento: '',
+ ciudad_cod: 0,
+ ciudad: '',
+ telefono: '',
+ celular: '',
+ direccion: '',
+ email: '',
+ redes_sociales: '',
+ cuenta_bancaria: '',
+ banco: '',
+ tipo_cuenta: '',
+ titular_cuenta: '',
+ titular_tipo_documento: 0,
+ titular_documento: '',
+ tipo_proveedor: 0,
+ activo: true
+	}
 	}
 
-	const saveProveedores = async () => {
-		console.log(listProveedores);
+	const saveHoteles = async () => {
+		console.log(listHoteles);
 		await fetch(urlAPI + '?ref=save-list', {
 			method: 'POST', //POST - PUT - DELETE
 			body: JSON.stringify({
 				user_id: $userNow.id,
 				time_life: $userNow.user_time_life,
 				token: $userNow.token,
-				list: listProveedores,
-				folder: 'ca_proveedores',
-				orden: 'nombre'
+				list: listHoteles,
+				folder: 'cinva_hoteles',
+				orden: 'hotel'
 				//password: pass,
 			}),
 			headers: {
@@ -113,7 +136,7 @@
 				};
 				m_show = true;
 				updateExcel();
-				//++listProveedores = result;
+				//++listHoteles = result;
 			})
 
 			.catch((error) => console.log(error.message));
@@ -121,18 +144,18 @@
 		//  });
 	};
 
-	let folder = 'ca_proveedores';
-	let showProveedor: boolean = false;
-	let proveedorActual: Proveedor = newProveedor;
+	let folder = 'cinva_hoteles';
+	let showHotel: boolean = false;
+	let hotelActual: Hotel = newHotel;
 	let positionEdit: number = -1;
 	let showFicha: boolean = false;
 
 	onMount(() => {
-		loadProveedores();
+		loadHoteles();
 	});
 
-	function actualizarView(p: Proveedor) {
-		listProveedores[positionEdit] = p;
+	function actualizarView(p: Hotel) {
+		listHoteles[positionEdit] = p;
 		updateExcel();
 	}
 
@@ -143,10 +166,10 @@
 				user_id: $userNow.id,
 				time_life: $userNow.user_time_life,
 				token: $userNow.token,
-				list: listProveedores,
-				folder: 'ca_proveedores',
+				list: listHoteles,
+				folder: 'cinva_hoteles',
 				orden: 'nombre',
-				archivo: 'excelProveedores.xlsx'
+				archivo: 'excelHoteles.xlsx'
 			}),
 			headers: {
 				'Content-type': 'application/json; charset=UTF-8'
@@ -159,7 +182,7 @@
 			.catch((error) => console.log(error.message));
 	};
 
-	//$: console.log('Proveedor:',proveedorActual)
+	//$: console.log('Hotel:',hotelActual)
 	let uploadExcel = false;
 	let fileExcel: FileList;
 	let file: any;
@@ -170,8 +193,8 @@
 		dataArray.append('user_id', String($userNow.id));
 		dataArray.append('time_life', String($userNow.user_time_life));
 		dataArray.append('token', $userNow.token);
-		dataArray.append('file', 'excelProveedores.xlsx');
-		dataArray.append('folder', 'ca_proveedores');
+		dataArray.append('file', 'excelHoteles.xlsx');
+		dataArray.append('folder', 'cinva_hoteles');
 		dataArray.append('uploadFile', fileExcel[0]);
 
 		fetch(urlAPI + '?ref=upload-excel&prefix=', {
@@ -190,7 +213,7 @@
 				};
 				m_show = true;
 				uploadExcel = false;
-				loadProveedores();
+				loadHoteles();
 			})
 			.catch((error) => console.log(error.message));
 	}
@@ -212,30 +235,30 @@
 
 	function handleCitySelect(cod: number, ciu: string, position: number) {
 		//console.log('Cod',cod)
-		listProveedores[position].ciudad_cod = cod;
-		listProveedores[position].ciudad = ciu;
+		listHoteles[position].ciudad_cod = cod;
+		listHoteles[position].ciudad = ciu;
 		filtroCiudades = [];
 	}
 </script>
 
 <svelte:head>
-	<title>Proveedores</title>
+	<title>Hoteles</title>
 </svelte:head>
 
 <div class="p-3 w-full">
 	<div class="relative pb-6  w-full">
 		<div class="flex">
-			<button class="btn-green mr-2 flex" on:click={saveProveedores}>
+			<button class="btn-green mr-2 flex" on:click={saveHoteles}>
 				<i class="fa fa-save mt-1 mr-2" />
 				Guardar</button
 			>
-			<button class="btn-primary mr-2 flex" on:click={() => addProveedor()}>
+			<button class="btn-primary mr-2 flex" on:click={() => addHotel()}>
 				<i class="fa fa-plus mt-1 mr-2" />
-				Agregar Nuevo Proveedor</button
+				Agregar Nuevo Hotel</button
 			>
 
 			<!-- <input type="search" class="inputA w-32 relative -top-1" />
-			<button class="btn-primary flex" on:click={() => addProveedor()}>
+			<button class="btn-primary flex" on:click={() => addHotel()}>
 				<i class="fa fa-plus mt-1 mr-2" />
 				Buscar</button
 			> -->
@@ -243,7 +266,7 @@
 
 		<div class="flex">
 			<a
-				href="https://goodtripscolombia.com/ca/api/api-CA.php?ref=download&archivo=1"
+				href="https://cinva.cityciudad.com/cinva-control/api/api-Control.php?ref=download&archivo=4"
 				target="_blank"
 			>
 				<button class="btn-primary mr-4 flex">
@@ -291,14 +314,14 @@
 				<th scope="col" class=""> Activo </th>
 			</thead>
 			<tbody>
-				{#each listProveedores as proveedor, i}
+				{#each listHoteles as hotel, i}
 					<tr class="bg-white border-b hover:bg-aliceblue align-top">
 						<td class="font-bold">{i + 1}</td>
 						<td>
 							<input
 								type="text"
 								class="inputA"
-								bind:value={proveedor.nombre}
+								bind:value={hotel.hotel}
 								placeholder="nombre"
 							/>
 						</td>
@@ -306,23 +329,23 @@
 							<input
 								type="text"
 								class="inputA"
-								bind:value={proveedor.documento}
+								bind:value={hotel.documento}
 								placeholder="nit"
 							/>
 						</td>
 						<!-- <td>
-							<input type="text" class="inputA" bind:value={proveedor.pais} placeholder="pais" />
+							<input type="text" class="inputA" bind:value={hotel.pais} placeholder="pais" />
 						</td> -->
 						<td class="relative">
 							<input
 								type="text"
 								class="inputA"
-								id={'P' + proveedor.id}
+								id={'P' + hotel.id}
 								on:input={handleSearchInput}
-								bind:value={proveedor.ciudad}
+								bind:value={hotel.ciudad}
 							/>
 
-							{#if filtroCiudades?.length > 0 && editar_ciudad === 'P' + proveedor.id}
+							{#if filtroCiudades?.length > 0 && editar_ciudad === 'P' + hotel.id}
 								<div
 									class="absolute z-10"
 									style="height:135px; background: #ccc; overflow-y:auto; overflow-x:hidden padding:10px"
@@ -346,7 +369,7 @@
 							<input
 								type="hidden"
 								class="inputA"
-								bind:value={proveedor.ciudad_cod}
+								bind:value={hotel.ciudad_cod}
 								placeholder="nombre"
 							/>
 						</td>
@@ -354,7 +377,7 @@
 							<input
 								type="text"
 								class="inputA"
-								bind:value={proveedor.direccion}
+								bind:value={hotel.direccion}
 								placeholder="direccion"
 							/>
 						</td>
@@ -362,7 +385,7 @@
 							<input
 								type="text"
 								class="inputA"
-								bind:value={proveedor.telefono}
+								bind:value={hotel.telefono}
 								placeholder="telefono"
 							/>
 						</td>
@@ -372,12 +395,12 @@
 								class="text-green"
 								on:click={() => {
 									showFicha = true;
-									proveedorActual = proveedor;
+									hotelActual = hotel;
 									positionEdit = i;
 								}}><i class="fa fa-drivers-license-o mt-2" /></button
 							>
 						</td>
-						<td class="text-center"><input type="checkbox" bind:checked={proveedor.activo} /></td>
+						<td class="text-center"><input type="checkbox" bind:checked={hotel.activo} /></td>
 					</tr>
 				{:else}
 					Sin registros
@@ -389,10 +412,10 @@
 
 {#if showFicha}
 	<!-- content here -->
-	<CaFicha
+	<ControlHotel
 		bind:showFicha
-		bind:elemento={proveedorActual}
-		folder="ca_proveedores"
+		bind:elemento={hotelActual}
+		folder="cinva_hoteles"
 		{actualizarView}
 		bind:m_show
 		bind:message

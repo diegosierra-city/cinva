@@ -23,9 +23,9 @@ $db_name = "u928799310_PMS";
 //
 
 $db_host = "localhost"; //192.185.131.105
-$db_user = "u898899309_user_ca";
-$db_pass = "3[cj|VBkrkWS"; //R6!D[d$0RoDf
-$db_name = "u898899309_ca";
+$db_user = "cityciud_usercinva";
+$db_pass = "E!sb,n?9o&=O";
+$db_name = "cityciud_cinva";
 
 //
 $conn = @mysqli_connect($db_host, $db_user, $db_pass, $db_name);
@@ -38,7 +38,7 @@ $mysqli->set_charset("utf8");
 
 
 
-$folder='ca_proveedores';
+$folder='cinva_proveedores';
 $orden='nombre';
 $archivo='excelProveedores.xlsx';
 $hoy = date('Y-m-d');

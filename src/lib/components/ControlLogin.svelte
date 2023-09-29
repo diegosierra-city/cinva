@@ -62,52 +62,48 @@ import {base} from '$app/paths'
 </script>
 
 <svelte:head>
-	<title>CA - Ingreso</title>
+	<title>Cinva - login</title>
 </svelte:head>
 
 <div
-	class="p-10 bg-primary rounded-lg w-10/12 lg:w-8/12 xl:w-6/12 mx-auto grid grid-cols-6 gap-4 my-12"
+	class="p-10 bg-primary rounded-lg w-10/12 sm:w-8/12 md:w-6/12 lg:w-4/12 mx-auto mt-12 border"
 >
 	<div
-		class="col-span-6 md:col-span-3 bg-white shadow-lg rounded lg:px-10 sm:px-6 sm:py-10 px-2 py-6"
+		class="col-span-6 bg-white shadow-lg rounded lg:px-10 sm:px-6 sm:py-10 px-2 py-6"
 	>
+	<img src="/LogoCinva80.png" class="mx-auto" alt="">
 		<p class="text-2xl font-bold leading-6 text-primary mt-4">Ingreso</p>
 
 		<form on:submit|preventDefault={login_run}>
 			<div class="mt-4">
-				<label for="email" class="text-sm font-medium leading-none text-gray-800"> Email</label>
+				<label for="email"> Email</label>
 				<input
 					autocomplete="email"
 					required
 					type="email"
-					class="inputA"
+					class="inputA" name="email"
 					placeholder="ej: john@gmail.com "
 					bind:value={login.email}
 				/>
 			</div>
 			<div class="mt-6 w-full">
-				<label for="myInput" class="text-sm font-medium leading-none text-gray-800"> Clave </label>
-				<div class="relative flex items-center justify-center">
+				<label for="pass"> Clave </label>
+				
 					<input
 						type="password"
-						class="inputA"
+						class="inputA" name="pass"
 						autocomplete="current-password" placeholder="Clave"
 						required
 						bind:value={login.pass}
 					/>
-				</div>
+				
 			</div>
 			<div class="mt-8">
 				<button type="submit" class="btn-primary-full">Ingresar</button>
 			</div>
 		</form>
 	</div>
-	<div class="col-span-6 md:col-span-3 md:mt-0 mt-6 text-white">
 	
-		<h2 class="text-center">CA</h2>
-		<div class="text-center mb-20">Sistema Control Agencia</div>
-			<img src="{base}/LogoGoodTripsColombia350.png" alt="">
-	</div>
 </div>
 
 {#if m_show == true}

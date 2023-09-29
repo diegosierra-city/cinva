@@ -1,6 +1,6 @@
 <?php
 // +------------------------------------------------------------------------+
-// | class.upload.ca_CA.php                                                 |
+// | class.upload.cinva_CA.php                                                 |
 // +------------------------------------------------------------------------+
 // | Copyright (c) Antoni Canals 2008. All rights reserved.                 |
 // | Version       0.25                                                     |

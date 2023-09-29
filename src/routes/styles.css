@@ -195,7 +195,7 @@ footer{
 
 
 .boton_admin li{
-    @apply flex w-full justify-between text-lightgray cursor-pointer items-center mb-2 hover:bg-white hover:bg-opacity-30 hover:text-white rounded-lg p-1 
+    @apply flex w-full justify-between text-lightgray cursor-pointer items-center mb-2 hover:bg-white hover:bg-opacity-30 hover:text-white rounded-lg p-1 border border-silver border-opacity-50 
 }
 .boton_admin_active{
     @apply text-black hover:text-terciary bg-secondary 
@@ -258,10 +258,10 @@ focus:ring-2 focus:ring-offset-2 focus:ring-primary
 }
 
 .message-red{
-    @apply ring-red
+    @apply ring-primary
 }
 .message-red .message-title{
-    @apply bg-red
+    @apply bg-primary
 }
 .message-green{
     @apply ring-green

@@ -5,7 +5,7 @@
 
 	export let m_show: boolean = false;
 	export let message: Message;
-	export let tecnico_id: number;
+	export let userEdit_id: number;
 	export let folder: string;
 
 	const urlAPI = $apiKey.urlAPI;
@@ -20,7 +20,7 @@
 				token: $userNow.token,
 				pass: newpassword,
 				folder: folder,
-				id: tecnico_id
+				id: userEdit_id
 			}),
 			headers: {
 				'Content-type': 'application/json; charset=UTF-8'

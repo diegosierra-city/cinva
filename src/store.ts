@@ -52,10 +52,10 @@ export const userNow = writable({
 export const apiKey = writable({
 
 	company_id: 1,
-	tokenWeb: "f99dad2ac548a08d3c28d74783092234",//7ef4599929298387a27b4b220d757d2f
-	company_name: "CA",
+	tokenWeb: "f99dad2ac548a08d3c28d74783092234",
+	company_name: "Cinva",
 	money: "$",///comillas simples error
-	urlAPI: "https://goodtripscolombia.com/ca/api/api-CA.php",
-	urlFiles: "https://goodtripscolombia.com/ca/maker-files/"	
+	urlAPI: "https://cinva.cityciudad.com/cinva-control/api/api-Control.php",
+	urlFiles: "https://cinva.cityciudad.com/cinva-control/maker-files/"	
 })
 

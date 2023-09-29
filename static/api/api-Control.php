@@ -14,18 +14,11 @@ if ($_GET['error']) {
 }
 
 $key_encrypt = 'j89+uI9-R';
-/*
-$db_host = "localhost";
-$db_user = "u928799310_web";
-$db_pass = "UjZfg-Wqh-895.+";
-$db_name = "u928799310_PMS";
-*/
-//
 
 $db_host = "localhost"; //192.185.131.105
-$db_user = "u898899309_user_ca";
-$db_pass = "3[cj|VBkrkWS"; //R6!D[d$0RoDf
-$db_name = "u898899309_ca";
+$db_user = "cityciud_usercinva";
+$db_pass = "E!sb,n?9o&=O";
+$db_name = "cityciud_cinva";
 
 //
 $conn = @mysqli_connect($db_host, $db_user, $db_pass, $db_name);
@@ -71,19 +64,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $archivo = $_GET['archivo'];
     if ($archivo == 1) {
       $archivoName = 'excelProveedores.xlsx';
-      $folder = 'ca_proveedores';
+      $folder = 'cinva_proveedores';
       $orden = 'nombre';
     } else if ($archivo == 2) {
       $archivoName = 'excelClientes.xlsx';
-      $folder = 'ca_clientes';
+      $folder = 'cinva_clientes';
       $orden = 'nombre,apellido';
     }else if ($archivo == 3) {
       $archivoName = 'excelServicios.xlsx';
-      $folder = 'ca_servicios';
+      $folder = 'cinva_servicios';
       $orden = 'servicio';
     }else if ($archivo == 4) {
       $archivoName = 'excelHoteles.xlsx';
-      $folder = 'ca_hoteles';
+      $folder = 'cinva_hoteles';
       $orden = 'hotel';
     }
 
@@ -155,9 +148,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         $campoV2 = $_GET['campoV2'];
         $orden = $_GET['orden'];
 
-        if (!$_GET['orden']) {
+        if (!isset($_GET['orden'])) {
           $orden = 'id';
         }
+        //echo 'ORDEN:'.$orden.'*';
         /// load categories
         $response = array();
 
@@ -174,11 +168,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
 
         while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-          if ($row['activo']) {
-            if ($row['activo'] == 1) {
+          if (isset($row['activo'])) {
+            //echo 'activo:'.$row['activo'].'*';
+            if ($row['activo'] == 1 || $row['activo'] == '1') {
               $row['activo'] = true;
-            } else if ($row['activo'] == 0) {
+            } else {
               $row['activo'] = false;
+            
             }
           }
 
@@ -213,7 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         $listTemporadas= array();
         //
         $h=0;
-        $resultC = $mysqli->query("SELECT id, hotel FROM ca_hoteles WHERE ciudad_cod='$city' ORDER BY hotel") or die($mysqli->error);
+        $resultC = $mysqli->query("SELECT id, hotel FROM cinva_hoteles WHERE ciudad_cod='$city' ORDER BY hotel") or die($mysqli->error);
 
         while ($rowC = $resultC->fetch_array(MYSQLI_ASSOC)) {
           $h++;
@@ -221,12 +217,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
        $listHoteles[$hotel_id]=$rowC['hotel'];
        //echo   $rowC['hotel'].' - '.$hotel_id.'<br>';
         //1 listado de temporadas
-        $result = $mysqli->query("SELECT * FROM ca_temporadas WHERE ciudad_cod='0' GROUP BY temporada ORDER BY temporada") or die($mysqli->error);
+        $result = $mysqli->query("SELECT * FROM cinva_temporadas WHERE ciudad_cod='0' GROUP BY temporada ORDER BY temporada") or die($mysqli->error);
 
         while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
 $temporada_id=$row['id']; 
 if($h==1) $listTemporadas[$temporada_id]=$row['temporada'];
-$rT = $mysqli->query("SELECT * FROM ca_hotel_tarifas WHERE hotel_id='$hotel_id' AND temporada_id='$temporada_id' LIMIT 1") or die($mysqli->error);
+$rT = $mysqli->query("SELECT * FROM cinva_hotel_tarifas WHERE hotel_id='$hotel_id' AND temporada_id='$temporada_id' LIMIT 1") or die($mysqli->error);
 $rowT = $rT->fetch_array();
 
 if(mysqli_num_rows($rT)===0){
@@ -246,13 +242,13 @@ $response[] = $rowT;
         }
 
         ///
-        $result2 = $mysqli->query("SELECT * FROM ca_temporadas WHERE ciudad_cod='$city' ORDER BY temporada") or die($mysqli->error);
+        $result2 = $mysqli->query("SELECT * FROM cinva_temporadas WHERE ciudad_cod='$city' ORDER BY temporada") or die($mysqli->error);
 
         while ($row2 = $result2->fetch_array(MYSQLI_ASSOC)) {
   $temporada_id=$row2['id'];
   if($h==1) $listTemporadas[$temporada_id]=$row2['temporada'];
 
-          $rT = $mysqli->query("SELECT * FROM ca_hotel_tarifas WHERE hotel_id='$hotel_id' AND temporada_id='$temporada_id' LIMIT 1") or die($mysqli->error);
+          $rT = $mysqli->query("SELECT * FROM cinva_hotel_tarifas WHERE hotel_id='$hotel_id' AND temporada_id='$temporada_id' LIMIT 1") or die($mysqli->error);
 $rowT = $rT->fetch_array();
 
 if(mysqli_num_rows($rT)===0){
@@ -297,7 +293,7 @@ $res[]=$listTemporadas;
         /// load categories
         $response = array();
         //listado ciudades
-        $r = $mysqli->query("SELECT ciudad_cod,ciudad FROM ca_hoteles GROUP BY ciudad_cod ORDER BY ciudad") or die($mysqli->error);
+        $r = $mysqli->query("SELECT ciudad_cod,ciudad FROM cinva_hoteles GROUP BY ciudad_cod ORDER BY ciudad") or die($mysqli->error);
 
         while ($row = $r->fetch_array(MYSQLI_ASSOC)) {
         $response[] = $row;
@@ -358,13 +354,16 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo '[{"id":"' . $data['email'] . '","documento":"' . $data['password'] . '-' . $_SERVER['REQUEST_METHOD'] . '"}]';
   } else
     if ($ref == 'login') {
+      
+
     $email = $data['email'];
     $password = $data['password'];
     $password2 = md5($password . $key_encrypt);
     $time = time() + (4 * 60 * 60); //4H 
-
+    
     $myArray = array();
-    $result = $mysqli->query("SELECT * FROM ca_users WHERE email='$email' AND clave='$password2' AND activo='1' LIMIT 1") or die($mysqli->error);
+    $result = $mysqli->query("SELECT * FROM cinva_users WHERE email='$email' AND clave='$password2' AND activo='1' LIMIT 1");
+$error=$mysqli->error;
 
     $token = '';
     $rowR = [];
@@ -387,18 +386,24 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $response = array();
     $response[] = $myArray;
 
+/* header("HTTP/1.1 200 OK"); 
+echo '[{"error":"'.$error=$mysqli->error.'"}]';
+return; */
     if ($us == 0) {
       header("HTTP/1.1 403 Error");
       echo '[{"error":"Error en el email o la clave"}]';
       // echo '[{"error":"'." email='$email' AND clave='$password2' AND  '$password' ".'"}]';
     } else {
-      header("HTTP/1.1 200 OK");
+      
       $result = json_encode($response);
 
       if ($result != '[]') {
+       header("HTTP/1.1 200 OK"); 
         echo $result;
+
       } else {
         //echo $result; 
+        header("HTTP/1.1 403 Error");
         echo '[{"error":"Error en el email o la clave..."}]';
       }
     }
@@ -418,7 +423,7 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $folder = $data['folder'];
       $id = $data['id'];
       $password = $data['pass'];
-      $password2 = md5($password . 'X-d%gf34');
+      $password2 = md5($password . $key_encrypt);
 
       $action = "UPDATE $folder SET clave='$password2' WHERE id='$id'";
       $mysqli->query($action) or die($mysqli->error);
@@ -534,6 +539,7 @@ return */
       foreach ($request as $campo => $valor) {
         // $update="$campo='$valor',";
         if ($campo != 'id') {
+          if($valor== true){ $valor=1; }else if($valor== false){ $valor=0; }
           $insertA .= $campo . ',';
           $insertB .= "'$valor',";
           $update .= "$campo='$valor',";
@@ -617,7 +623,7 @@ return */
       }
 
       $utilizar_cod = 'no';
-      if($folder=='ca_temporadas') $utilizar_cod = 'si';
+      if($folder=='cinva_temporadas') $utilizar_cod = 'si';
 
       foreach ($list as $request) {
 
@@ -703,7 +709,7 @@ return */
           $condicion .= "AND";
         }
 
-        if($folder=='ca_temporadas'){
+        if($folder=='cinva_temporadas'){
 $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!='Baja'") or die($mysqli->error);
         }else{
          $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod'") or die($mysqli->error); 
@@ -1634,9 +1640,9 @@ $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!=
       $prefix = $_POST['prefix'];
       $w = 800;
       $h = 600;
-      if ($folder == 'ca_users') {
+      if ($folder == 'cinva_users') {
         $w = 600;
-      }else if($folder == 'ca_servicios') {
+      }else if($folder == 'cinva_servicios') {
         $w = 1200;
       }
 
@@ -1654,7 +1660,7 @@ $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!=
           $ext = pathinfo($path, PATHINFO_EXTENSION);
           $ext = strtolower($ext);
           //
-          if ($folder == 'ca_users' || $folder == 'ca_servicios') {
+          if ($folder == 'cinva_users' || $folder == 'cinva_servicios') {
             $path_preview = $id . '.' . $ext . '?t=' . time();
             $pathBase=$id;
           }else {
@@ -1714,7 +1720,7 @@ $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!=
       if ($error == '') {
         //
         $row_name = 'imagen' . $position;
-        if ($folder == 'ca_users') {
+        if ($folder == 'cinva_users') {
           $row_name = 'imagen';
         }
 
@@ -1935,7 +1941,7 @@ $target_file_name_base = $folder_id.'-'.limpiar_tildes($ref);
             if (move_uploaded_file($_FILES["uploadFile"]["tmp_name"], $target_file)) {
               /// despues de subirlo se registra
               $archivo = $target_file_name;
-              $action = "INSERT INTO ca_archivos (tabla,tabla_id,ref,archivo,fecha) VALUES ('$folder', '$folder_id', '$ref','$archivo', '$hoy')";
+              $action = "INSERT INTO cinva_archivos (tabla,tabla_id,ref,archivo,fecha) VALUES ('$folder', '$folder_id', '$ref','$archivo', '$hoy')";
               $mysqli->query($action) or die($mysqli->error);
 
               header("HTTP/1.1 200 OK");
@@ -1953,7 +1959,7 @@ $target_file_name_base = $folder_id.'-'.limpiar_tildes($ref);
           if (move_uploaded_file($_FILES["uploadFile"]["tmp_name"], $target_file)) {
             /// despues de subirlo se registra
             $archivo = $target_file_name;
-            $action = "INSERT INTO ca_archivos (tabla,tabla_id,ref,archivo,fecha) VALUES ('$folder', '$folder_id', '$ref','$archivo', '$hoy')";
+            $action = "INSERT INTO cinva_archivos (tabla,tabla_id,ref,archivo,fecha) VALUES ('$folder', '$folder_id', '$ref','$archivo', '$hoy')";
             $mysqli->query($action) or die($mysqli->error);
 
             header("HTTP/1.1 200 OK");
@@ -1985,7 +1991,7 @@ $target_file_name_base = $folder_id.'-'.limpiar_tildes($ref);
       // echo '[{"upload":"' . $_FILES['uploadFile']['size'] . '"}]';
       // return;
 
-      $action = "DELETE FROM ca_archivos WHERE id='$id'";
+      $action = "DELETE FROM cinva_archivos WHERE id='$id'";
       $mysqli->query($action) or die($mysqli->error);
       ///
       $ruta = "../maker-files/archivos/" . $archivo;

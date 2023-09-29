@@ -103,7 +103,7 @@
 				$userNow.user_time_life +
 				'&token=' +
 				$userNow.token +
-				'&folder=ca_archivos&orden=id&campo=tabla&campoV='+folder+'&campo2=tabla_id&campoV2=' +
+				'&folder=cinva_archivos&orden=id&campo=tabla&campoV='+folder+'&campo2=tabla_id&campoV2=' +
 				elemento.id
 		)
 			.then((response) => response.json())
@@ -126,7 +126,7 @@
 				$userNow.user_time_life +
 				'&token=' +
 				$userNow.token +
-				'&folder=ca_proveedores&campo=nombre'
+				'&folder=cinva_proveedores&campo=nombre'
 		)
 			.then((response) => response.json())
 			.then((data) => {
@@ -137,7 +137,7 @@
 	};
 
 	onMount(() => {
-		if(folder!=='ca_servicios'){
+		if(folder!=='cinva_servicios'){
 		loadArchivos();	
 		}else{
 			loadList()
@@ -310,7 +310,7 @@
 		>
 	</div>
 
-	<h3>{elemento.hotel}</h3>
+	<h3>{elemento.nombre}</h3>
 	{#if logo}
 		<img src={`${urlFiles}archivos/${logo}`} alt="logo" class="w-40 rounded-md shadow-md border-1 border-silver">
 	{/if}
@@ -507,7 +507,7 @@
 		{/each}
 	</div>
 
-	{#if folder!=='ca_servicios'}
+	{#if folder!=='cinva_servicios'}
 	
 	<div class="mt-4">
 		<h3>Archivos adjuntos:</h3>

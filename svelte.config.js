@@ -15,7 +15,7 @@ export default {
 			strict: true ///true
 		}),
 		paths: {
-			base: '/ca' //nombre de la carpeta destino
+			base: '/cinva-control' //nombre de la carpeta destino
 		},
 
 	}

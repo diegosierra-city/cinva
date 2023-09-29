@@ -5,14 +5,14 @@
 	import { Moon } from 'svelte-loading-spinners';
 	import Messages from '$lib/components/Messages.svelte';
 	import type { Message } from '$lib/types/Message';
-	import CaFicha from './CaFicha.svelte';
+	import ControlFicha from './ControlFicha.svelte';
 	import { numberFormat } from '$lib/utilities/NumberFormat';
 	import type { City } from '$lib/utilities/Cities';
 	import { Cities } from '$lib/utilities/Cities';
 	import type { ListFilterCiudad } from '$lib/types/List';
 
 	import Fuse from 'fuse.js';
-	import CaServicio from './CaServicio.svelte';
+	import ControlServicio from './ControlServicio.svelte';
 
 	let m_show: boolean = false;
 	let message: Message;
@@ -33,7 +33,7 @@
 			$userNow.user_time_life +
 			'&token=' +
 			$userNow.token +
-			'&folder=ca_servicios&orden=nombre'
+			'&folder=cinva_servicios&orden=nombre'
 	); //&campo=tipo&campoV=tecnico
 
 	// Función de comparación personalizada
@@ -71,7 +71,7 @@ function filtrarPorCiudad() {
 				$userNow.user_time_life +
 				'&token=' +
 				$userNow.token +
-				'&folder=ca_servicios&orden=servicio'
+				'&folder=cinva_servicios&orden=servicio'
 		)
 			.then((response) => response.json())
 			.then((result) => {
@@ -107,7 +107,7 @@ listCities=[...ciudadesUnicas]
 				$userNow.user_time_life +
 				'&token=' +
 				$userNow.token +
-				'&folder=ca_proveedores&campo=nombre'
+				'&folder=cinva_proveedores&campo=nombre'
 		)
 			.then((response) => response.json())
 			.then((data) => {
@@ -174,7 +174,7 @@ listCities=[...ciudadesUnicas]
 				time_life: $userNow.user_time_life,
 				token: $userNow.token,
 				list: listServicios,
-				folder: 'ca_servicios',
+				folder: 'cinva_servicios',
 				orden: 'servicio'
 				//password: pass,
 			}),
@@ -199,7 +199,7 @@ listCities=[...ciudadesUnicas]
 		//  });
 	};
 
-	let folder = 'ca_servicios';
+	let folder = 'cinva_servicios';
 	let showServicio: boolean = false;
 	let servicioActual: Servicio = newServicio;
 	let positionEdit: number = -1;
@@ -223,7 +223,7 @@ listCities=[...ciudadesUnicas]
 				time_life: $userNow.user_time_life,
 				token: $userNow.token,
 				list: listServicios,
-				folder: 'ca_servicios',
+				folder: 'cinva_servicios',
 				orden: 'servicio',
 				archivo: 'excelServicios.xlsx'
 			}),
@@ -250,7 +250,7 @@ listCities=[...ciudadesUnicas]
 		dataArray.append('time_life', String($userNow.user_time_life));
 		dataArray.append('token', $userNow.token);
 		dataArray.append('file', 'excelServicios.xlsx');
-		dataArray.append('folder', 'ca_servicios');
+		dataArray.append('folder', 'cinva_servicios');
 		dataArray.append('uploadFile', fileExcel[0]);
 
 		fetch(urlAPI + '?ref=upload-excel&prefix=', {
@@ -324,9 +324,9 @@ listCities=[...ciudadesUnicas]
 			dataArray.append('id', String(image_id));
 			dataArray.append('position', '');
 			dataArray.append('uploadFile', image);
-			dataArray.append('folder', 'ca_servicios');
+			dataArray.append('folder', 'cinva_servicios');
 
-			fetch(urlAPI + '?ref=upload&folder=ca_servicios&prefix=', {
+			fetch(urlAPI + '?ref=upload&folder=cinva_servicios&prefix=', {
 				method: 'POST',
 				body: dataArray
 			})
@@ -365,7 +365,7 @@ listCities=[...ciudadesUnicas]
 
 		<div class="flex">
 			<a
-				href="https://goodtripscolombia.com/ca/api/api-CA.php?ref=download&archivo=3"
+				href="https://cinva.cityciudad.com/cinva-control/api/api-Control.php?ref=download&archivo=3"
 				target="_blank"
 			>
 				<button class="btn-primary mr-4 flex">
@@ -508,7 +508,7 @@ listCities=[...ciudadesUnicas]
 									<div class="flex items-center">
 										<img
 											class="w-16 h-auto mr-2"
-											src="{urlFiles}imagenes/ca_servicios/M{servicio.imagen}"
+											src="{urlFiles}imagenes/cinva_servicios/M{servicio.imagen}"
 											alt={servicio.servicio}
 										/>
 
@@ -581,10 +581,10 @@ listCities=[...ciudadesUnicas]
 />
 
 {#if showFicha}
-	<CaServicio
+	<ControlServicio
 		bind:showFicha
 		bind:elemento={servicioActual}
-		folder="ca_servicios"
+		folder="cinva_servicios"
 		{actualizarView}
 		bind:m_show
 		bind:message

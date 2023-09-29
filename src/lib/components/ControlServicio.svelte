@@ -89,7 +89,7 @@
 				$userNow.user_time_life +
 				'&token=' +
 				$userNow.token +
-				'&folder=ca_archivos&orden=id&campo=tabla&campoV=' +
+				'&folder=cinva_archivos&orden=id&campo=tabla&campoV=' +
 				folder +
 				'&campo2=tabla_id&campoV2=' +
 				elemento.id
@@ -111,7 +111,7 @@
 				$userNow.user_time_life +
 				'&token=' +
 				$userNow.token +
-				'&folder=ca_proveedores&campo=nombre'
+				'&folder=cinva_proveedores&campo=nombre'
 		)
 			.then((response) => response.json())
 			.then((data) => {
@@ -122,7 +122,7 @@
 	};
 
 	onMount(() => {
-		if (folder !== 'ca_servicios') {
+		if (folder !== 'cinva_servicios') {
 			loadArchivos();
 		}
 		/* else{
@@ -594,7 +594,7 @@
 		</div>
 	</div>
 
-	{#if folder !== 'ca_servicios'}
+	{#if folder !== 'cinva_servicios'}
 		<div class="mt-4">
 			<h4>Archivos adjuntos:</h4>
 			<small>*Máximo 10 Megas</small>

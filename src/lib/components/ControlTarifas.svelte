@@ -107,7 +107,7 @@ listCities = result;
 				time_life: $userNow.user_time_life,
 				token: $userNow.token,
 				list: [...listHotelTarifas],
-				folder: 'ca_hotel_tarifas',
+				folder: 'cinva_hotel_tarifas',
 				orden: 'id'
 				//password: pass,
 			}),
@@ -135,7 +135,7 @@ listCities = result;
 		//  });
 	};
 
-	let folder = 'ca_hotel_tarifas';
+	let folder = 'cinva_hotel_tarifas';
 	let showHotel: boolean = false;
 	let hotelActual: HotelTarifas = newHotel;
 	let positionEdit: number = -1;
@@ -155,7 +155,7 @@ listCities = result;
 				time_life: $userNow.user_time_life,
 				token: $userNow.token,
 				list: listHotelTarifas,
-				folder: 'ca_hotel_tarifas',
+				folder: 'cinva_hotel_tarifas',
 				orden: 'id',
 				archivo: 'excelHotelTarifas.xlsx'
 			}),
@@ -182,7 +182,7 @@ listCities = result;
 		dataArray.append('time_life', String($userNow.user_time_life));
 		dataArray.append('token', $userNow.token);
 		dataArray.append('file', 'excelHotelTarifas.xlsx');
-		dataArray.append('folder', 'ca_hotel_tarifas');
+		dataArray.append('folder', 'cinva_hotel_tarifas');
 		dataArray.append('uploadFile', fileExcel[0]);
 
 		fetch(urlAPI + '?ref=upload-excel&prefix=', {
@@ -234,7 +234,7 @@ listCities = result;
 
 		<div class="flex">
 			<a
-				href="https://goodtripscolombia.com/ca/api/api-CA.php?ref=download&archivo=4"
+				href="https://cinva.cityciudad.com/cinva-control/api/api-Control.php?ref=download&archivo=4"
 				target="_blank"
 			>
 				<button class="btn-primary mr-4 flex">

@@ -28,7 +28,7 @@ let listTemporadasEspecial: Array<Temporada> = [];
 			$userNow.user_time_life +
 			'&token=' +
 			$userNow.token +
-			'&folder=ca_temporadas&orden=nombre'
+			'&folder=cinva_temporadas&orden=nombre'
 	); //&campo=tipo&campoV=tecnico
 
 	const loadTemporadas = async () => {
@@ -40,7 +40,7 @@ let listTemporadasEspecial: Array<Temporada> = [];
 				$userNow.user_time_life +
 				'&token=' +
 				$userNow.token +
-				'&folder=ca_temporadas&orden=temporada&campo=ciudad&campoV='
+				'&folder=cinva_temporadas&orden=temporada&campo=ciudad&campoV='
 		)
 			.then((response) => response.json())
 			.then((result) => {
@@ -61,7 +61,7 @@ let listTemporadasEspecial: Array<Temporada> = [];
 				$userNow.user_time_life +
 				'&token=' +
 				$userNow.token +
-				'&folder=ca_temporadas&orden=temporada&campo=ciudad&campoV=-1')
+				'&folder=cinva_temporadas&orden=temporada&campo=ciudad&campoV=-1')
 		await fetch(
 			urlAPI +
 				'?ref=load-list&user_id=' +
@@ -70,7 +70,7 @@ let listTemporadasEspecial: Array<Temporada> = [];
 				$userNow.user_time_life +
 				'&token=' +
 				$userNow.token +
-				'&folder=ca_temporadas&orden=temporada&campo=ciudad&campoV=-1'
+				'&folder=cinva_temporadas&orden=temporada&campo=ciudad&campoV=-1'
 		)
 			.then((response) => response.json())
 			.then((result) => {
@@ -126,7 +126,7 @@ let listTemporadasEspecial: Array<Temporada> = [];
 				time_life: $userNow.user_time_life,
 				token: $userNow.token,
 				list: listFinal,
-				folder: 'ca_temporadas',
+				folder: 'cinva_temporadas',
 				orden: 'temporada'
 				//password: pass,
 			}),
@@ -169,7 +169,7 @@ saveTemporadas(list)
 		}
 	}
 
-	let folder = 'ca_temporadas';
+	let folder = 'cinva_temporadas';
 	let showTemporada: boolean = false;
 	let temporadaActual: Temporada = newTemporada;
 	let positionEdit: number = -1;

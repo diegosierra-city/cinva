@@ -9,3 +9,13 @@ export interface User {
     token: string
     activo: boolean
 }
+
+export interface UserControl {
+    id: number
+    nombre: string
+    documento:string
+	email: string
+    tipo: string
+    permisos: string
+	activo: boolean
+}

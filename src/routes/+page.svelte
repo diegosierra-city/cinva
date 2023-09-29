@@ -2,16 +2,17 @@
 import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 	import type { User } from '$lib/types/User'
 
- import CstLogin from '$lib/components/CaLogin.svelte';
+ import ControlLogin from '$lib/components/ControlLogin.svelte';
 	
-	import CstClientes from '$lib/components/CaClientes.svelte';
+	import ControlClientes from '$lib/components/ControlClientes.svelte';
 			
 	import { onMount } from 'svelte';
-	import CaProveedores from '$lib/components/CaProveedores.svelte';
-	import CaServicios from '$lib/components/CaServicios.svelte';
-	import CaHoteles from '$lib/components/CaHoteles.svelte';
-	import CaTemporadas from '$lib/components/CaTemporadas.svelte';
-	import CaTarifas from '$lib/components/CaTarifas.svelte';
+	import ControlProveedores from '$lib/components/ControlProveedores.svelte';
+	import ControlServicios from '$lib/components/ControlServicios.svelte';
+	import ControlHoteles from '$lib/components/ControlHoteles.svelte';
+	import ControlTemporadas from '$lib/components/ControlTemporadas.svelte';
+	import ControlTarifas from '$lib/components/ControlTarifas.svelte';
+	import ControlUsuarios from '$lib/components/ControlUsuarios.svelte';
 
 	// import PmsHotel from '$lib/components/PmsHotel.svelte';
 	// import PmsHabitaciones from '$lib/components/PmsHabitaciones.svelte';
@@ -78,36 +79,38 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 </script>
 
 <svelte:head>
-	<title>CA</title>
+	<title>Cinva Control</title>
 	<meta name="description" content="Sistema para Control de Agencia de Good Trips Colombia" />
 	<link rel="stylesheet" href="./css/font-awesome-4.7.0/css/font-awesome.css" />
 </svelte:head>
 
-<section class="w-full h-full m-0 " style="min-heigth:100vh; height:100vh">
+<section class="w-full h-full m-0 " style="min-heigth:100vh; max-height:100vh overflow-y-auto">
 	
 {#if $userNow.id == 0 || $userNow.id == undefined}
-<CstLogin /> 
+<ControlLogin /> 
 
+{:else if $moduleAdmin == 'Usuarios'}
+<ControlUsuarios />
 {:else if $moduleAdmin == 'Clientes'}
-<CstClientes />
+<ControlClientes />
 {:else if $moduleAdmin == 'Proveedores'}
-<CaProveedores />
+<ControlProveedores />
 
 {:else if $moduleAdmin == 'Servicios'}
-<CaServicios />
+<ControlServicios />
 
 {:else if $moduleAdmin == 'Temporadas'}
-<CaTemporadas />
+<ControlTemporadas />
 
 {:else if $moduleAdmin == 'Hoteles'}
-<CaHoteles />
+<ControlHoteles />
 
 {:else if $moduleAdmin == 'Tarifas'}
-<CaTarifas />
+<ControlTarifas />
 {/if}
 
-<footer class="fixed bottom-0 p-1">
-	<small class="text-center ml-8">Todos los Derechos Reservados <strong>Good Trips Colombia</strong></small>
+<footer class="fixed bottom-0 p-1 text-center">
+	<small class=" ml-8">Todos los Derechos Reservados <strong>Cinva</strong></small>
 </footer>
 
 </section>

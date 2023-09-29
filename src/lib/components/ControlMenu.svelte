@@ -64,11 +64,11 @@
 						<span class="text-sm ml-2 hidden md:block text-black">Usuarios</span>
 					</div>
 				</li>
-				<li class:boton_admin_active={$moduleAdmin === 'Clientes'}>
+				<li class:boton_admin_active={$moduleAdmin === 'Clientesx'}>
 					<button
 						class="flex items-center w-full"
 						on:click={() => {
-							$moduleAdmin = 'Clientes';
+							$moduleAdmin = 'Clientesx';
 						}}
 					>
 						<i class="fa fa-group" />
@@ -77,7 +77,59 @@
 					</button>
 				</li>
 
-				<li class:boton_admin_active={$moduleAdmin === 'Proveedores'}>
+				<li class:boton_admin_active={$moduleAdmin === 'Productos'}>
+					<button
+						class="flex items-center w-full"
+						on:click={() => {
+							$moduleAdmin = 'Productos';
+						}}
+					>
+						<i class="fa fa-circle" />
+
+						<span class="text-sm ml-2 hidden md:block text-black">Productos</span>
+					</button>
+				</li>
+
+<li class:boton_admin_active={$moduleAdmin === 'Pedidos'}>
+					<button
+						class="flex items-center w-full"
+						on:click={() => {
+							$moduleAdmin = 'Pedidos';
+						}}
+					>
+						<i class="fa fa-circle" />
+
+						<span class="text-sm ml-2 hidden md:block text-black">Pedidos</span>
+					</button>
+				</li>
+
+<li class:boton_admin_active={$moduleAdmin === 'Tareas'}>
+					<button
+						class="flex items-center w-full"
+						on:click={() => {
+							$moduleAdmin = 'Tareas';
+						}}
+					>
+						<i class="fa fa-circle" />
+
+						<span class="text-sm ml-2 hidden md:block text-black">Tareas</span>
+					</button>
+				</li>
+
+			<li class:boton_admin_active={$moduleAdmin === 'Reportes'}>
+					<button
+						class="flex items-center w-full"
+						on:click={() => {
+							$moduleAdmin = 'Reportes';
+						}}
+					>
+						<i class="fa fa-circle" />
+
+						<span class="text-sm ml-2 hidden md:block text-black">Reportes</span>
+					</button>
+				</li>	
+
+				<!-- <li class:boton_admin_active={$moduleAdmin === 'Proveedoresx'}>
 					<button
 						class="flex items-center w-full"
 						on:click={() => {
@@ -153,7 +205,7 @@
 
 						<span class="text-sm ml-2 hidden md:block text-black">Paquetes</span>
 					</button>
-				</li>
+				</li> -->
 			</ul>
 		</div>
 
@@ -161,7 +213,7 @@
 			<ul class="w-full md:flex items-center justify-between">
 				<li class="cursor-pointer text-white pt-0 pb-3">
 					<button class="icono_admin" on:click={salir}>
-						<i class="fa fa-power-off text-red" /> salir
+						<i class="fa fa-power-off text-white" /> salir
 					</button>
 				</li>
 
