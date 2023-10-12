@@ -13,9 +13,52 @@
 	let message: Message;
 
 	let listClientes: Array<Cliente> = [];
+	let listAllClientes: Array<Cliente> = [];	
+		let listCities: Array<any> = [];	
 
 	const urlAPI = $apiKey.urlAPI;
 	const urlFiles = $apiKey.urlFiles;
+
+	function ordenarCiudad(a:any, b:any) {
+  // Primero, compara por ciudad
+  if (a.ciudad < b.ciudad) return -1;
+  if (a.ciudad > b.ciudad) return 1;
+
+  // Si las ciudades son iguales, compara por servicio
+  if (a.tipo_servicio < b.tipo_servicio) return -1;
+  if (a.tipo_servicio > b.tipo_servicio) return 1;
+
+  // Si ambas ciudades y servicios son iguales, no hay cambio en el orden
+  return 0;
+}
+
+let city:number = 0
+function filtrarPorCiudad() {
+	let ciudadDeseada:number= city
+	if(ciudadDeseada==0){
+		listClientes= listAllClientes
+	}else{
+		listClientes= listAllClientes.filter((objeto:any) => objeto.ciudad_cod === ciudadDeseada);
+	}
+	
+}
+
+////
+function actualizarArrayCompleto(arrayCompleto:Array<any>, arrayParcial:Array<any>) {
+	arrayParcial.forEach(objetoParcial => {
+    // Verificar si el objeto ya existe en el array completo (por ejemplo, basado en "id")
+    const objetoExistente = arrayCompleto.find(obj => obj.id === objetoParcial.id);
+
+    if (objetoExistente) {
+      // Si el objeto existe, actualizar sus propiedades
+      Object.assign(objetoExistente, objetoParcial);
+    } else {
+      // Si el objeto no existe, agregarlo al array completo
+      arrayCompleto.push(objetoParcial);
+    }
+  });
+}
+
 	//// GET
 	console.log(
 		urlAPI +
@@ -44,7 +87,23 @@
 				console.log('recibiendo:');
 
 				listClientes = result;
-				console.log(listClientes);
+				listClientes.sort(ordenarCiudad);
+				listAllClientes=listClientes
+				
+				console.log('LoadClientes', listClientes);
+				// Crear un conjunto para almacenar ciudades únicas
+const ciudadesUnicasSet = new Set();
+
+// Filtrar y almacenar ciudades únicas en el conjunto
+listClientes.forEach(obj => {
+  ciudadesUnicasSet.add(JSON.stringify({ ciudad_cod: obj.ciudad_cod, ciudad: obj.ciudad }));
+});
+
+// Convertir el conjunto de nuevo en un array y ordenarlo alfabéticamente
+const ciudadesUnicas = Array.from(ciudadesUnicasSet).map((str:any) => JSON.parse(str)).sort((a, b) => a.ciudad.localeCompare(b.ciudad));
+
+listCities=[...ciudadesUnicas]
+				///
 			})
 			.catch((error) => console.log(error.message));
 	}
@@ -112,13 +171,17 @@ f.getFullYear() + "-"+ f.getMonth()+ "-" +f.getDate();
 
 	const saveClientes = async () => {
 		console.log(listClientes);
+		actualizarArrayCompleto(listAllClientes, listClientes);
+
+console.log(listAllClientes)
+
 		await fetch(urlAPI + '?ref=save-list', {
 			method: 'POST', //POST - PUT - DELETE
 			body: JSON.stringify({
 				user_id: $userNow.id,
 				time_life: $userNow.user_time_life,
 				token: $userNow.token,
-				list: listClientes,
+				list: listAllClientes,
 				folder: 'cinva_clientes',
 				orden: 'ciudad,nombre'
 				//password: pass,
@@ -131,6 +194,27 @@ f.getFullYear() + "-"+ f.getMonth()+ "-" +f.getDate();
 			//.then(result => console.log(result))
 			.then((result) => {
 				console.log('GuardoListado',result);
+
+				listClientes = result;
+				listClientes.sort(ordenarCiudad);
+				listAllClientes=listClientes
+				
+
+				const ciudadesUnicasSet = new Set();
+
+// Filtrar y almacenar ciudades únicas en el conjunto
+listClientes.forEach(obj => {
+  ciudadesUnicasSet.add(JSON.stringify({ ciudad_cod: obj.ciudad_cod, ciudad: obj.ciudad }));
+});
+
+// Convertir el conjunto de nuevo en un array y ordenarlo alfabéticamente
+const ciudadesUnicas = Array.from(ciudadesUnicasSet).map((str:any) => JSON.parse(str)).sort((a, b) => a.ciudad.localeCompare(b.ciudad));
+
+listCities=[...ciudadesUnicas]
+
+filtrarPorCiudad()
+
+
 				message = {
 					title: 'Guardar',
 					text: 'Se guardó correctamente',
@@ -309,6 +393,15 @@ let file: any
 		
 
 	</div>
+
+	<div>Ciudad: <select class="inputA w-40" bind:value={city} on:change={filtrarPorCiudad}>
+		<option value={0}>Todas</option>
+	{#each listCities as ct}
+		<option value={ct.ciudad_cod}>{ct.ciudad}</option>
+	{/each}
+	</select>
+	</div>
+
 		<table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
 			<thead class="text-xs text-white uppercase bg-primary dark:bg-gray-700 dark:text-gray-400">
 				<th scope="col" class="" />
