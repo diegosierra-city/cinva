@@ -64,11 +64,11 @@
 						<span class="text-sm ml-2 hidden md:block text-black">Usuarios</span>
 					</div>
 				</li>
-				<li class:boton_admin_active={$moduleAdmin === 'Clientesx'}>
+				<li class:boton_admin_active={$moduleAdmin === 'Clientes'}>
 					<button
 						class="flex items-center w-full"
 						on:click={() => {
-							$moduleAdmin = 'Clientesx';
+							$moduleAdmin = 'Clientes';
 						}}
 					>
 						<i class="fa fa-group" />

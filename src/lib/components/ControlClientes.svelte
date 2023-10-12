@@ -51,29 +51,63 @@
 
 	let newCliente: Cliente;
 	newCliente = {
-		id: Date.now(),
+	id: 0,
+ fecha_contacto: '',
+ ultimo_contacto: '',
+ vendedor_id: $userNow.id,
  tipo_documento: 0,
  documento: '',
  nombre: '',
- nombre2: '',
- apellido: '',
- apellido2: '',
  nombre_comercial: '',
+ cumpleaños: '',
  pais: 'CO',
- departamento: '',
-	ciudad_cod: 0,
- ciudad: 'Bogotá',
+ departamento: 'Huila',
+ ciudad_cod: 0,
+ ciudad: '',
+	direccion: '',
+ barrio: '',
  telefono: '',
  celular: '',
- direccion: '',
  email: '',
- redes_sociales: '', 
- tipo_cliente: 0,
+	facebook: '',
+ instagram: '',
+ tiktok: '',
+ x_twitter: '',
  activo: true
 	};
 
 	function addCliente() {
+		var f = new Date();
+f.getFullYear() + "-"+ f.getMonth()+ "-" +f.getDate();
+
+		newCliente.id=Date.now()
+		newCliente.fecha_contacto=String(f)
 		listClientes = [...listClientes, newCliente];
+		newCliente = {
+	id: 0,
+ fecha_contacto: '',
+ ultimo_contacto: '',
+ vendedor_id: $userNow.id,
+ tipo_documento: 0,
+ documento: '',
+ nombre: '',
+ nombre_comercial: '',
+ cumpleaños: '',
+ pais: 'CO',
+ departamento: 'Huila',
+ ciudad_cod: 0,
+ ciudad: '',
+	direccion: '',
+ barrio: '',
+ telefono: '',
+ celular: '',
+ email: '',
+ facebook: '',
+ instagram: '',
+ tiktok: '',
+ x_twitter: '',
+ activo: true
+	}
 	}
 
 	const saveClientes = async () => {
@@ -86,7 +120,7 @@
 				token: $userNow.token,
 				list: listClientes,
 				folder: 'cinva_clientes',
-				orden: 'nombre,apellido'
+				orden: 'ciudad,nombre'
 				//password: pass,
 			}),
 			headers: {
@@ -279,13 +313,13 @@ let file: any
 			<thead class="text-xs text-white uppercase bg-primary dark:bg-gray-700 dark:text-gray-400">
 				<th scope="col" class="" />
 				<th scope="col" class=""> Nombre/Razón Social </th>
-				<th scope="col" class=""> Nit </th>
-				<th scope="col" class=""> País </th>
+				<th scope="col" class=""> Tipo Doc. </th>
+				<th scope="col" class=""> Documento </th>
 				<th scope="col" class=""> Ciudad </th>
 				<th scope="col" class=""> Dirección </th>
 				<th scope="col" class=""> Telefono </th>
+				<th scope="col" class=""> Email </th>
 				<th scope="col" class="" />
-				<th scope="col" class=""> Activo </th>
 			</thead>
 			<tbody>
 				{#each listClientes as cliente, i}
@@ -298,24 +332,26 @@ let file: any
 								bind:value={cliente.nombre}
 								placeholder="nombre"
 							/>
-							<input
-								type="text"
+							
+						</td>
+						<td>
+							<select 
 								class="inputA"
-								bind:value={cliente.apellido}
-								placeholder="apellido"
-							/>
+								bind:value={cliente.tipo_documento}>
+							<option value="13">cc</option>
+							<option value="31">nit</option>
+							</select>
+
 						</td>
 						<td>
 							<input
 								type="text"
 								class="inputA"
 								bind:value={cliente.documento}
-								placeholder="nit"
+								placeholder="documento"
 							/>
 						</td>
-						<td>
-							<input type="text" class="inputA" bind:value={cliente.pais} placeholder="pais" />
-						</td>
+						
 						<td>
 							
 							<input
@@ -371,7 +407,14 @@ let file: any
 								placeholder="telefono"
 							/>
 						</td>
-
+<td class="">
+							<input
+								type="email"
+								class="inputA"
+								bind:value={cliente.email}
+								placeholder="email"
+							/>
+						</td>
 						<td class="text-center text-xl">
 							<button class="text-green" on:click={()=>{
 								showFicha=true
@@ -379,7 +422,8 @@ let file: any
 								positionEdit=i
 							}}><i class="fa fa-drivers-license-o mt-2" /></button>
 						</td>
-						<td class="text-center"><input type="checkbox" bind:checked={cliente.activo} /></td>
+						<!-- <td class="text-center"><input type="checkbox" bind:checked={cliente.activo} />
+						</td> -->
 					</tr>
 				{:else}
 					Sin registros

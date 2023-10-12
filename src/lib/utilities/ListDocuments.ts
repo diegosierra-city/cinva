@@ -1,4 +1,10 @@
 export const Documents = [
+ { cod: '13', doc: 'cédula de ciudadanía' },
+ { cod: '31', doc: 'NIT' },
+]
+
+/*
+export const Documents = [
  { cod: '11', doc: 'registro civil de nacimiento'},
  { cod: '12', doc: 'tarjeta de identidad' },
  { cod: '13', doc: 'cédula de ciudadanía' },
@@ -9,3 +15,4 @@ export const Documents = [
  { cod: '42', doc: 'tipo de documento extranjero' },
  { cod: '43', doc: 'sin identificación del exterior u uso definido por la DIAN' },
 ]
+*/

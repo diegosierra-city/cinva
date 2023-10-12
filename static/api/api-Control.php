@@ -336,7 +336,80 @@ $err= $mysqli->error;
         //echo '[{"error-'.$folder.'":"'.$err.'"}]';
         echo json_encode($response);
       }
-    }
+    }else if ($ref == 'load-list-filter') {
+
+$user_id = $_GET['user_id'];
+$time = $_GET['time_life'];
+$token = $_GET['token'];
+
+$tokenBase = md5($user_id . $time . $key_encrypt);
+
+if ($tokenBase != $token) {
+  header("HTTP/1.1 202 ERROR");
+  echo '{"error":"Error in token:' . $tokenBase . '-' . $token . '"}';
+} else {
+
+  $folder = $_GET['folder'];
+        $campo = $_GET['campo'];
+        $campoV = $_GET['campoV'];
+        $campo2 = $_GET['campo2'];
+        $campoV2 = $_GET['campoV2'];
+        $orden = $_GET['orden'];
+        $name = $_GET['name'];
+
+        if (!isset($_GET['orden'])) {
+          $orden = 'id';
+        }
+        //echo 'ORDEN:'.$orden.'*';
+        /// load categories
+        $response = array();
+
+        if ($campo2 != '') {
+          $result = $mysqli->query("SELECT id, $name AS `name` FROM $folder WHERE ($campo='$campoV' OR $campo2='$campoV2') AND activo='1'ORDER BY $orden") or die($mysqli->error);
+        } else if ($campo != '' && $campoV!=-1) {
+          $result = $mysqli->query("SELECT id, $name AS `name` FROM $folder WHERE $campo='$campoV' AND activo='1'ORDER BY $orden") or die($mysqli->error);
+        }else if ($campo != '' && $campoV==-1) {
+          //echo "SELECT id, $name AS `name` FROM $folder WHERE $campo!='' AND activo='1'ORDER BY $orden";
+          $result = $mysqli->query("SELECT id, $name AS `name` FROM $folder WHERE $campo!='' AND activo='1'ORDER BY $orden") or die($mysqli->error);
+        } else {
+          $result = $mysqli->query("SELECT id, $name AS `name` FROM $folder WHERE activo='1'ORDER BY $orden") or die($mysqli->error);
+        }
+
+
+        while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+          if (isset($row['activo'])) {
+            //echo 'activo:'.$row['activo'].'*';
+            if ($row['activo'] == 1 || $row['activo'] == '1') {
+              $row['activo'] = true;
+            } else {
+              $row['activo'] = false;
+            
+            }
+          }
+
+          unset($row['clave']); ///quitamos este campo del array
+
+          $response[] = $row;
+        }
+
+  /* $folder = $_GET['folder'];
+  $campo = $_GET['campo'];
+
+  /// load categories
+  $response = array();
+
+  $result = $mysqli->query("SELECT id, $campo AS `name`,ciudad_cod FROM $folder WHERE activo='1' ORDER BY `name`");
+$err= $mysqli->error;
+
+  while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+ $response[] = $row;
+  } */
+
+  header("HTTP/1.1 200 OK");
+  //echo '[{"error-'.$folder.'":"'.$err.'"}]';
+  echo json_encode($response);
+}
+}
   /// 
 }
 /// FIN metodo GET  ******************

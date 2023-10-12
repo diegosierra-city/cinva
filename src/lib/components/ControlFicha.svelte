@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { Countries } from '$lib/utilities/Countries';
 	import { Proveedores } from '$lib/utilities/ListProveedores';
+	import type {User} from '$lib/types/User'
+
 	import { Clientes } from '$lib/utilities/ListClientes';
 	import { Documents } from '$lib/utilities/ListDocuments';
 	import { cookie_info, apiKey, userNow } from '../../store';
@@ -11,7 +13,7 @@
 
 	import type { City } from '$lib/utilities/Cities';
 	import { Cities } from '$lib/utilities/Cities';
-	import type { ListFilterCiudad } from '$lib/types/List';
+	import type { ListFilterCiudad, List } from '$lib/types/List';
 
 	import Fuse from 'fuse.js';
 
@@ -31,6 +33,7 @@
 	listElemento = Object.entries(elemento);
 
 	let listProveedores: Array<ListFilterCiudad>;
+	let listVendedores: Array<List>
 
 	//$: console.log('ListElemento', listElemento);
 
@@ -117,6 +120,25 @@
 			.catch((error) => console.log(error.message));
 	};
 
+const loadVendedores = async () => {
+		await fetch(
+			urlAPI +
+				'?ref=load-list-filter&user_id=' +
+				$userNow.id +
+				'&time_life=' +
+				$userNow.user_time_life +
+				'&token=' +
+				$userNow.token +
+				'&folder=cinva_users&orden=nombre&campo=tipo&campoV=vendedor&campo2=tipo&campoV2=administrador&name=nombre'
+		)
+			.then((response) => response.json())
+			.then((result) => {
+				console.log('vendedores:', result);
+				listVendedores = result;				
+			})
+			.catch((error) => console.log(error.message));
+	};
+
 	const loadList = async () => {
 		await fetch(
 			urlAPI +
@@ -137,10 +159,11 @@
 	};
 
 	onMount(() => {
-		if(folder!=='cinva_servicios'){
-		loadArchivos();	
+		if(folder=='cinva_clientes'){
+		//loadArchivos();	
+		loadVendedores();
 		}else{
-			loadList()
+			//loadList()
 		}
 		
 	});
@@ -331,9 +354,7 @@
 
 					{/if}
 					
-				
-					
-
+						
 					{#if item[0] === 'tipo_documento' || item[0] === 'titular_tipo_documento'}
 						<select class="inputA" bind:value={item[1]}>
 							{#each Documents as documento}
@@ -367,6 +388,10 @@
 							<option value={true}>Activo</option>
 							<option value={false}>Inactivo</option>
 						</select>
+						{:else if item[0] === 'fecha_contacto' || item[0] === 'ultimo_contacto' }
+						<input type="date" class="inputA" readonly bind:value={item[1]} >
+						{:else if item[0] === 'cumpleaños' }
+						<input type="date" class="inputA"  bind:value={item[1]} >
 						{:else if item[0] === 'ciudad_cod'}
 						<input type="text" class="inputA" id="ciudad_cod" bind:value={item[1]} readonly>
 						{:else if item[0] === 'ciudad'}
@@ -402,8 +427,15 @@
 						<option value="tour">Tour</option>
 						<option value="traslado">Traslado</option>
 					</select>
+					{:else if item[0] === 'vendedor_id'}
+					<select class="inputA" bind:value={item[1]}>
+						{#if listVendedores}
+							{#each listVendedores as pro}
+						<option value={pro.id}>{pro.name}</option>
+					{/each}
+						{/if}
+					</select>
 {:else if item[0] === 'proveedor'}
-
 					<select class="inputA" bind:value={item[1]}>
 						{#if listProveedores}
 												{#each (listProveedores.filter(prov => prov.ciudad_cod == listElemento[1][1])) as pro}
