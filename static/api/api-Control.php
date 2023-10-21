@@ -1645,9 +1645,9 @@ $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!=
 
       $hoy = date('Y-m-d');
 
-      include 'PHPExcel.php';
-      include 'PHPExcel/Writer/Excel2007.php';
-
+      include './PHPExcel.php';
+      include './PHPExcel/Writer/Excel2007.php';
+      
       $resultado = $mysqli->query("SELECT * FROM $folder ORDER BY $orden");
 
       // Creación del objeto PHPExcel
@@ -1681,14 +1681,18 @@ $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!=
       $objPHPExcel->getActiveSheet()->setTitle('Reporte ' . $hoy);
       // Guardado de la hoja de cálculo
       $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-      $objWriter->save($archivo);
+      
 
+if($objWriter->save($archivo)){
+header("HTTP/1.1 200 OK");
+      echo '[{"excel":"actualizado ' . $archivo . '"}]';  
+}else{
+header("HTTP/1.1 402 ERROR");
+      echo '[{"error":"problema con ' . $archivo . '"}]';  
+}
+      
 
-      header("HTTP/1.1 200 OK");
-      echo '[{"excel":"actualizado ' . $archivo . '"}]';
-
-      header("HTTP/1.1 200 OK");
-      echo '[{"excel":"actualizado ' . $archivo . '"}]';
+     
     }
   }
   /// END save product

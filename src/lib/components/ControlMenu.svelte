@@ -76,6 +76,18 @@
 						<span class="text-sm ml-2 hidden md:block text-black">Clientes</span>
 					</button>
 				</li>
+				<li class:boton_admin_active={$moduleAdmin === 'Proveedores'}>
+					<button
+						class="flex items-center w-full"
+						on:click={() => {
+							$moduleAdmin = 'Proveedores';
+						}}
+					>
+						<i class="fa fa-handshake-o" />
+
+						<span class="text-sm ml-2 hidden md:block text-black">Proveedores</span>
+					</button>
+				</li>
 
 				<li class:boton_admin_active={$moduleAdmin === 'Productos'}>
 					<button
@@ -84,7 +96,7 @@
 							$moduleAdmin = 'Productos';
 						}}
 					>
-						<i class="fa fa-circle" />
+						<i class="fa fa-cubes" />
 
 						<span class="text-sm ml-2 hidden md:block text-black">Productos</span>
 					</button>

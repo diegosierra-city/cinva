@@ -95,7 +95,8 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 <ControlClientes />
 {:else if $moduleAdmin == 'Proveedores'}
 <ControlProveedores />
-
+{:else if $moduleAdmin == 'Productos'}
+<ControlProveedores />
 {:else if $moduleAdmin == 'Servicios'}
 <ControlServicios />
 

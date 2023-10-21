@@ -257,7 +257,7 @@ const updateExcel= async () => {
 				token: $userNow.token,
 				list: listClientes,
 				folder: 'cinva_clientes',
-				orden: 'nombre,apellido',
+				orden: 'ciudad,nombre',
 				archivo: 'excelClientes.xlsx',
 			}),
 			headers: {

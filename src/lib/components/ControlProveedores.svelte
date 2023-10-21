@@ -52,13 +52,11 @@
 
 	let newProveedor: Proveedor;
 	newProveedor = {
-		id: Date.now(),
+		id: 0,
 		tipo_documento: 0,
 		documento: '',
 		nombre: '',
-		nombre2: '',
 		apellido: '',
-		apellido2: '',
 		nombre_comercial: '',
 		pais: 'CO',
 		departamento: 'BOGOTÁ D.C.',
@@ -75,13 +73,36 @@
 		titular_cuenta: '',
 		titular_tipo_documento: 0,
 		titular_documento: '',
-		tipo_proveedor: 0,
 		activo: true
 	};
 
 	function addProveedor() {
 		newProveedor = { ...newProveedor, id: Date.now() };
 		listProveedores = [...listProveedores, newProveedor];
+		newProveedor = {
+		id: Date.now(),
+		tipo_documento: 0,
+		documento: '',
+		nombre: '',
+		apellido: '',
+		nombre_comercial: '',
+		pais: 'CO',
+		departamento: 'BOGOTÁ D.C.',
+		ciudad_cod: 11001,
+		ciudad: 'Bogota D.C.',
+		telefono: '',
+		celular: '',
+		direccion: '',
+		email: '',
+		redes_sociales: '',
+		cuenta_bancaria: '',
+		banco: '',
+		tipo_cuenta: '',
+		titular_cuenta: '',
+		titular_tipo_documento: 0,
+		titular_documento: '',
+		activo: true
+	}
 	}
 
 	const saveProveedores = async () => {
@@ -282,7 +303,7 @@
 			<thead>
 				<th scope="col" class="" />
 				<th scope="col" class=""> Nombre </th>
-				<th scope="col" class=""> Nit </th>
+				<th scope="col" class=""> Nit/Documento </th>
 
 				<th scope="col" class=""> Ciudad </th>
 				<th scope="col" class=""> Dirección </th>
@@ -307,7 +328,7 @@
 								type="text"
 								class="inputA"
 								bind:value={proveedor.documento}
-								placeholder="nit"
+								placeholder="nit/documento"
 							/>
 						</td>
 						<!-- <td>

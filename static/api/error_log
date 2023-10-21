@@ -1,0 +1,8 @@
+[12-Oct-2023 11:01:10 America/Bogota] PHP Notice:  Undefined index: error in /home3/cityciudad/cinva.cityciudad.com/cinva-control/api/api-Control.php on line 10
+[12-Oct-2023 11:01:10 America/Bogota] PHP Notice:  Undefined index: campo in /home3/cityciudad/cinva.cityciudad.com/cinva-control/api/api-Control.php on line 688
+[12-Oct-2023 11:01:10 America/Bogota] PHP Notice:  Undefined index: campoV in /home3/cityciudad/cinva.cityciudad.com/cinva-control/api/api-Control.php on line 689
+[12-Oct-2023 11:01:10 America/Bogota] PHP Notice:  Undefined index: campo in /home3/cityciudad/cinva.cityciudad.com/cinva-control/api/api-Control.php on line 694
+[12-Oct-2023 11:01:10 America/Bogota] PHP Notice:  Undefined index: ciudad,nombre in /home3/cityciudad/cinva.cityciudad.com/cinva-control/api/api-Control.php on line 734
+[12-Oct-2023 11:01:10 America/Bogota] PHP Notice:  Undefined index: ciudad,nombre in /home3/cityciudad/cinva.cityciudad.com/cinva-control/api/api-Control.php on line 734
+[12-Oct-2023 11:01:10 America/Bogota] PHP Notice:  Undefined index: respuesta in /home3/cityciudad/cinva.cityciudad.com/cinva-control/api/api-Control.php on line 795
+[12-Oct-2023 11:01:10 America/Bogota] PHP Notice:  Undefined index: error in /home3/cityciudad/cinva.cityciudad.com/cinva-control/api/api-Control.php on line 10
