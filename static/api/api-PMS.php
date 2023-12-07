@@ -264,8 +264,46 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $response[] = $row;
       }
-      /* */
-      ///
+      
+      ///envia emails
+      $rHT = $mysqli->query("SELECT * FROM hoteles WHERE id='$hotel_id' LIMIT 1") or die($mysqli->error);
+      $rowHT = $rHT->fetch_array();
+      $email_hotel=$rowHT['email_reservas'];
+      //$email_hotel='diegosierra@cityciudad.com';
+                //
+      
+      $message = '<strong>' . $pax_name . '</strong><br><br>Se ha registrado la <strong>Reserva N. ' . $reservaN . '</strong> en el hotel <strong>' . $rowHT['hotel'] . '</strong> con fecha de ingreso: '.$fechaIn.' y fecha de salida: '.$fechaOut.'<br><br>Cualquier duda o comentario, por favor comuníquese con nosotros.<br><br>Saludos<br><br>';
+      ob_start();
+      include("../api/mail.php");
+      $html = ob_get_contents();
+      ob_end_clean();
+      
+      $subject = 'Reservación N. ' . $reservaN . ' en ' . $rowHT['hotel'];
+      
+      
+      $from_email = $email_hotel;
+      // echo $html;
+      $send_email = $email_pax;
+      
+      if (strtoupper(substr(PHP_OS, 0, 3) == 'WIN')) {
+        $eol = "\r\n";
+      } elseif (strtoupper(substr(PHP_OS, 0, 3) == 'MAC')) {
+        $eol = "\r";
+      } else {
+        $eol = "\n";
+      }
+      $header = "Content-type: text/html" . $eol;
+      //dirección del remitente
+      $header .= 'From: ' . $company . ' <' . $from_email . '>' . $eol;
+      $header .= 'Reply-To: ' . $company . ' <' . $from_email . '>' . $eol;
+      $header .= "Message-ID:<" . time() . " TheSystem@" . $_SERVER['SERVER_NAME'] . ">" . $eol;
+      $header .= "X-Mailer: PHP v" . phpversion() . $eol;
+      $header .= 'MIME-Version: 1.0' . $eol;
+      //////
+      mail($send_email, $subject, $html, $header);
+      mail($from_email, $subject, $html, $header);
+
+      ///fin emails
       header("HTTP/1.1 200 OK");
       //echo $fecha.'*'.$empresa_id;
       echo json_encode($response);

@@ -9,10 +9,12 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 	import { onMount } from 'svelte';
 	import ControlProveedores from '$lib/components/ControlProveedores.svelte';
 	import ControlServicios from '$lib/components/ControlServicios.svelte';
-	import ControlHoteles from '$lib/components/ControlHoteles.svelte';
+	
 	import ControlTemporadas from '$lib/components/ControlTemporadas.svelte';
 	import ControlTarifas from '$lib/components/ControlTarifas.svelte';
 	import ControlUsuarios from '$lib/components/ControlUsuarios.svelte';
+	import ControlCategories from '$lib/components/ControlCategories.svelte';
+	import ControlAllPedidos from '$lib/components/ControlAllPedidos.svelte';
 
 	// import PmsHotel from '$lib/components/PmsHotel.svelte';
 	// import PmsHabitaciones from '$lib/components/PmsHabitaciones.svelte';
@@ -96,15 +98,15 @@ import { cookie_info, cookie_update, moduleAdmin, userNow } from '../store';
 {:else if $moduleAdmin == 'Proveedores'}
 <ControlProveedores />
 {:else if $moduleAdmin == 'Productos'}
-<ControlProveedores />
+<ControlCategories />
 {:else if $moduleAdmin == 'Servicios'}
 <ControlServicios />
 
 {:else if $moduleAdmin == 'Temporadas'}
 <ControlTemporadas />
 
-{:else if $moduleAdmin == 'Hoteles'}
-<ControlHoteles />
+{:else if $moduleAdmin == 'Pedidos'}
+<ControlAllPedidos />
 
 {:else if $moduleAdmin == 'Tarifas'}
 <ControlTarifas />

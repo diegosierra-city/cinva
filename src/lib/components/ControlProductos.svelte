@@ -1,17 +1,16 @@
 <script lang="ts">
 	import type { Product } from '$lib/types/Product';
+	import type { Proveedor } from '$lib/types/Proveedor';
 	import { onMount } from 'svelte/internal';
 	import { apiKey, userNow } from '../../store';
 
 	import ControlProducto from '$lib/components/ControlProducto.svelte';
 
-	import Messages from '$lib/components/Messages.svelte';
-
 	import type { Message } from '$lib/types/Message';
 	import { formattedNumber } from '$lib/utilities/FormatNumber';
 
-	let m_show: boolean = false;
-	let message: Message;
+	export let m_show: boolean;
+	export let message: Message;
 
 	//
 	export let show_products: boolean;
@@ -19,10 +18,12 @@
 	export let category_name: string ='';
 
 	//export let edit_product: Product
+	let listProveedores: Proveedor[]
 	let new_product: Product;
 	let productN: Product = {
 		id: 0,
 		category_id: category_id,
+		proveedor_id: 0,
 		product: '',
 		ref: '',
 		description: '',
@@ -31,6 +32,7 @@
 		size: '',
 		color: '',
 		stock: 0,
+		unidad: 'unidad',
 		image1: '',
 		image2: '',
 		image3: '',
@@ -46,14 +48,14 @@
 	let product_list: Array<Product> = [];
 	let product_edit: number;
 
-	const urlAPI = $apiKey.urlAPI_Maker;
+	const urlAPI = $apiKey.urlAPI;
 
 	const loadProducts= async (cat:number) => {
 		console.log(
 			urlAPI +
 				'?ref=product-list&user_id=' +
 				$userNow.id +
-				'&time=' +
+				'&time_life=' +
 				$userNow.user_time_life +
 				'&token=' +
 				$userNow.token +
@@ -64,7 +66,7 @@
 			urlAPI +
 				'?ref=product-list&user_id=' +
 				$userNow.id +
-				'&time=' +
+				'&time_life=' +
 				$userNow.user_time_life +
 				'&token=' +
 				$userNow.token +
@@ -73,34 +75,55 @@
 		)
 			.then((response) => response.json())
 			.then((result) => {
-				//console.table(result);
-				if (result[0].error) {
-					console.error(result[0].error);
-				} else {
-					//console.log("Listado Product Muy Bien:");
-					product_list = result;
-				}
+				//console.log("Listado Product Muy Bien:");
+					product_list = result;				
 			})
-			.catch((error) => console.log(error.message));
+			.catch((error) => console.log(error));
+	}
+
+	const loadProveedores= async () => {
+		console.log(
+			urlAPI +
+				'?ref=load-list&user_id=' +
+				$userNow.id +
+				'&time_life=' +
+				$userNow.user_time_life +
+				'&token=' +
+				$userNow.token +
+				'&folder=cinva_proveedores&campo=activo&campoV=1&orden=nombre'
+		)
+		await fetch(
+			urlAPI +
+				'?ref=load-list&user_id=' +
+				$userNow.id +
+				'&time_life=' +
+				$userNow.user_time_life +
+				'&token=' +
+				$userNow.token +
+				'&folder=cinva_proveedores&campo=activo&campoV=1&orden=nombre'
+		)
+			.then((response) => response.json())
+			.then((result) => {
+				listProveedores = result;				
+			})
+			.catch((error) => console.log(error));
 	}
 
 	$: loadProducts(category_id);
 	
 	const saveProduct = async () => {
-		//console.log("yy");
-		//// POST
-
-		//await fetch(urlAPI + '?ref=save-product', {
-		await fetch(urlAPI + '?ref=save-list&folder=maker_products&campo=category_id&campo_id='+category_id, {	
+		console.log("lista",product_list);
+				//await fetch(urlAPI + '?ref=save-product', {
+		await fetch(urlAPI + '?ref=save-list', {	
 			method: 'POST', //POST - PUT - DELETE
 			body: JSON.stringify({
-				company_id: $apiKey.companyId,
 				user_id: $userNow.id,
 				time_life: $userNow.user_time_life,
 				token: $userNow.token,
-				list: product_list
-				//products: product_list
-				//password: pass,
+				list: product_list,
+				folder: 'cinva_products',
+				campo: 'category_id',
+				campoV: category_id
 			}),
 			headers: {
 				'Content-type': 'application/json; charset=UTF-8'
@@ -109,19 +132,8 @@
 			.then((response) => response.json())
 			//.then(result => console.log(result))
 			.then((result) => {
-				//console.log('ok:'+new_user.error)
-
-				if (result[0].error) {
-					message = {
-						title: 'Error',
-						text: 'Error: ' + result[0].error,
-						class: 'message-red',
-						accion: ''
-					};
-					m_show = true;
-
-					console.error(result[0].error);
-				} else {
+				console.log('ok:'+result[0])
+				 
 					message = {
 						title: 'Guardar',
 						text: 'Se han guardado los datos',
@@ -129,17 +141,20 @@
 						accion: ''
 					};
 					m_show = true;
-
-					//console.log("Muy Bien:"+result[0].ok);
-					product_list = result;
-					//new_user = result[0]
-					//cookie_update('user',JSON.stringify(new_user))
+					//product_list = result;					
 					show_products = false;
-				}
+				
 			})
-
-			.catch((error) => console.log(error.message));
-
+			.catch((error)=>{
+				message = {
+						title: 'Error',
+						text: 'Error: ' + error,
+						class: 'message-red',
+						accion: ''
+					};
+					m_show = true;
+			})
+			
 		//  });
 	};
 
@@ -153,8 +168,8 @@
 		product_list = [...product_list, new_product];
 		new_product = {
 		id: 0,
-		company_id: $apiKey.companyId,
 		category_id: category_id,
+		proveedor_id: 0,
 		product: '',
 		ref: '',
 		description: '',
@@ -163,6 +178,7 @@
 		size: '',
 		color: '',
 		stock: 0,
+		unidad: 'unidades',
 		image1: '',
 		image2: '',
 		image3: '',
@@ -197,13 +213,16 @@
 	let show_product: boolean = false;
 	let prod_position: number;
 	
+	onMount(()=>{
+		loadProveedores()
+	})
 </script>
 
 <svelte:head>
 	<title>{category_name}</title>
 </svelte:head>
 
-<div class="p-3 w-full mt-14 ">
+<div class="px-3 w-full mt-0 ">
 	<h3>Categoría: {category_name}</h3>
 
 	<div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-2">
@@ -232,7 +251,7 @@
 				<th scope="col" class="px-4 py-2"> Producto</th>
 
 				<th scope="col" class="px-4 py-2"> Ref </th>
-				<th scope="col" class="px-4 py-2"> Precio </th>
+				<th scope="col" class="px-4 py-2"> Costo </th>
 				<th scope="col" class="px-4 py-2"> Existencias </th>
 				<th scope="col" class="px-4 py-2"> Posición </th>
 				<th scope="col" class="px-4 py-2"> Home </th>
@@ -330,10 +349,5 @@
 </div>
 
 {#if show_product == true}
-	<ControlProducto bind:show_product bind:prod={product_list[prod_position]} bind:m_show bind:message />
-{/if}
-
-{#if m_show}
-	 <!-- content here -->
-		<Messages bind:m_show bind:message />
+	<ControlProducto bind:show_product bind:prod={product_list[prod_position]} bind:m_show bind:message {listProveedores} />
 {/if}

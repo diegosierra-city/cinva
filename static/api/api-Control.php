@@ -14,6 +14,7 @@ if ($_GET['error']) {
 }
 
 $key_encrypt = 'j89+uI9-R';
+$key_encrypt_web = 'Fr-96(';
 
 $db_host = "localhost"; //192.185.131.105
 $db_user = "cityciud_usercinva";
@@ -47,14 +48,11 @@ function limpiar_numeros($numero)
 }
 
 $data = json_decode(file_get_contents('php://input'), true);
-
-
 $ref = $_GET['ref'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
   if ($ref == 'test') {
-
     header("HTTP/1.1 200 OK");
     echo '[{"nombre":"Diego2"}]';
     //////++++
@@ -84,16 +82,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
       header("HTTP/1.1 404 ERROR");
       echo '[{"error":"El archivo no existe"}]';
     } else {
-
       //header("Content-Type: application/csv");
       header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
       header("Content-Disposition: attachment; filename=" . $hoy . $archivoName);
       readfile($archivoName);
       exit;
     }
-
-
-    //////++++
 
   } else
     ///CA
@@ -164,6 +158,74 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
           $result = $mysqli->query("SELECT * FROM $folder WHERE $campo!='' ORDER BY $orden") or die($mysqli->error);
         } else {
           $result = $mysqli->query("SELECT * FROM $folder ORDER BY $orden") or die($mysqli->error);
+        }
+
+
+        while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+          if (isset($row['activo'])) {
+            //echo 'activo:'.$row['activo'].'*';
+            if ($row['activo'] == 1 || $row['activo'] == '1') {
+              $row['activo'] = true;
+            } else {
+              $row['activo'] = false;
+            
+            }
+          }
+
+          unset($row['clave']); ///quitamos este campo del array
+
+          $response[] = $row;
+        }
+
+
+        header("HTTP/1.1 200 OK");
+        //echo $fecha.'*'.$empresa_id;
+        echo json_encode($response);
+      }
+    }else if ($ref == 'load-list-dates') {
+
+      $user_id = $_GET['user_id'];
+      $time = $_GET['time_life'];
+      $token = $_GET['token'];
+
+      $tokenBase = md5($user_id . $time . $key_encrypt);
+
+      if ($tokenBase != $token) {
+        header("HTTP/1.1 202 ERROR");
+        echo '{"error":"Error in token:' . $tokenBase . '-' . $token . '"}';
+      } else {
+//echo '***';
+        $folder = $_GET['folder'];
+        $campo = $_GET['campo'];
+        $campoV = $_GET['campoV'];
+        $campo2 = $_GET['campo2'];
+        $campoV2 = $_GET['campoV2'];
+        $orden = $_GET['orden'];
+        $date1 = $_GET['date1'];
+        $date2 = $_GET['date2'];
+        ///fecha a segundos unix
+        $date2 = strtotime($date2)+(24*60*60);
+        $date2 = date('Y-m-d H:s',$date2);
+        if (!isset($_GET['orden'])) {
+          $orden = 'id';
+        }
+        $filterDate="fecha>='$date1' AND fecha<='$date2'";
+        //echo 'ORDEN:'.$orden.'*';
+        /// load categories
+        $response = array();
+
+        if ($campo2 != '') {
+          //echo 1;
+          $result = $mysqli->query("SELECT * FROM $folder WHERE $campo='$campoV' AND $campo2='$campoV2' AND $filterDate ORDER BY $orden") or die($mysqli->error);
+        } else if ($campo != '' && $campoV!=-1) {
+          //echo 2;
+          $result = $mysqli->query("SELECT * FROM $folder WHERE $campo='$campoV' AND $filterDate ORDER BY $orden") or die($mysqli->error);
+        }else if ($campo != '' && $campoV==-1) {
+          //echo "SELECT * FROM $folder WHERE $campo!='' AND $filterDate ORDER BY $orden";
+          $result = $mysqli->query("SELECT * FROM $folder WHERE $campo!='' AND $filterDate ORDER BY $orden") or die($mysqli->error);
+        } else {
+          //echo "SELECT * FROM $folder WHERE $filterDate ORDER BY $orden";
+          $result = $mysqli->query("SELECT * FROM $folder WHERE $filterDate ORDER BY $orden") or die($mysqli->error);
         }
 
 
@@ -275,6 +337,90 @@ $res[]=$listTemporadas;
         header("HTTP/1.1 200 OK");
         //echo $fecha.'*'.$empresa_id;
         echo json_encode($res);
+      }
+    }else if ($ref == 'category-list') {
+
+      $user_id = $_GET['user_id'];
+      $time = $_GET['time_life'];
+      $token = $_GET['token'];
+
+      $tokenBase = md5($user_id . $time . $key_encrypt);
+
+      if ($tokenBase != $token) {
+        header("HTTP/1.1 202 ERROR");
+        echo '{"error":"Error in token:' . $tokenBase . '-' . $token . '"}';
+      } else {
+        
+        $categories = array();
+
+        $result = $mysqli->query("SELECT * FROM cinva_categories ORDER BY active DESC, position ASC, category ASC ");
+        $c = 0;
+        while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+          $c++;
+          if ($row['active'] == 0) {
+            $row['active'] = false;
+          } else {
+            $row['active'] = true;
+          }
+
+
+          $categories[] = $row;
+        }
+
+
+        ///
+        header("HTTP/1.1 200 OK");
+        //echo $fecha.'*'.$empresa_id;
+        if ($c > 0) {
+          echo json_encode($categories);
+        } else {
+          echo '[{"error":"Categories empty"}]';
+        }
+      }
+    } else
+    /// fin list categories
+    if ($ref == 'product-list') {
+
+      $user_id = $_GET['user_id'];
+      $time_life = $_GET['time_life'];
+      $token = $_GET['token'];
+
+      $tokenB = md5($user_id . $time_life . $key_encrypt);
+
+      if ($token != $tokenB) {
+        header("HTTP/1.1 403 ERROR");
+        echo '{"error":"Error in token:' . $tokenB . '-' . $token . '"}';
+      } else {
+        $category_id = $_GET['category_id'];
+        $products = array();
+
+        $result = $mysqli->query("SELECT * FROM cinva_products WHERE category_id='$category_id' ORDER BY active DESC, position ASC , product ASC");
+        $c = 0;
+        while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+          $c++;
+          if ($row['active'] == 0) {
+            $row['active'] = false;
+          } else {
+            $row['active'] = true;
+          }
+
+          if ($row['home'] == 0) {
+            $row['home'] = false;
+          } else {
+            $row['home'] = true;
+          }
+          $products[] = $row;
+        }
+
+
+        ///
+        header("HTTP/1.1 200 OK");
+        //echo $fecha.'*'.$empresa_id;
+        if ($c > 0) {
+          echo json_encode($products);
+        } else {
+          echo '[]';
+        }
       }
     }else if ($ref == 'load-list-tarifas-cities') {
 
@@ -551,6 +697,7 @@ return; */
         $action = "INSERT INTO $folder ($rA) VALUES ($rB)";
         $mysqli->query($action);
         $err = $mysqli->error;
+                
         ///
         $resultID = $mysqli->query("SELECT id FROM $folder ORDER BY id DESC LIMIT 1") or die($mysqli->error);
         $rowID = $resultID->fetch_array();
@@ -688,7 +835,7 @@ return */
       $columna = $data['campo'];
       $columna_id = $data['campoV'];
       $orden = $data['orden'];
-
+if($orden=='') $orden='id';
       //
       $condicion = "";
       if ($data['campo']) {
@@ -710,8 +857,14 @@ return */
           if ($campo == 'cod') {
             $utilizar_cod = 'si';
           }
+          if ($campo == 'quantity') {
+            $cantidad = $valor;
+          }
+          if ($campo == 'product_id') {
+            $product_id = $valor;
+          }
           // $update="$campo='$valor',";
-          if ($campo != 'id' && $campo != 'cod') {
+          if ($campo != 'id' && $campo != 'cod' && $campo!='variants') {
 
             $insertA .= $campo . ',';
             $insertB .= "'$valor',";
@@ -746,7 +899,7 @@ return */
           $action = "INSERT INTO $folder ($rA) VALUES ($rB)";
           $mysqli->query($action);
           $err = $mysqli->error;
-
+           
           ///
           if ($utilizar_cod == 'si') {
             $resultID = $mysqli->query("SELECT id FROM $folder WHERE cod='$cod' ORDER BY id DESC LIMIT 1");
@@ -756,6 +909,13 @@ return */
 
           $rowID = $resultID->fetch_array();
           $id = $rowID['id'];
+
+          if($folder==='cinva_order_products'){
+///actualizamos el stock
+$action = "UPDATE cinva_products SET stock = stock - $cantidad WHERE id='$product_id'";
+          $mysqli->query($action);
+          }
+
         } else if ($id > 0) { //$ejecutar == 'si'
           ///actualizar
           if ($utilizar_cod == 'si') {
@@ -770,27 +930,22 @@ return */
         $act .= $action;
       }
 
-      /* header("HTTP/1.1 200 OK");
-      //echo '[{"save":"ok:' . $action . '"}]';
-      echo '[{"save":"ok:' . $err . '"}]';
-      return; */
-
+     
       //borramos los que no están
-
+      
       if ($utilizar_cod == 'si') {
-        if ($condicion != '') {
-          $condicion .= "AND";
-        }
-
-        if($folder=='cinva_temporadas'){
-$mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!='Baja'") or die($mysqli->error);
-        }else{
-         $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod'") or die($mysqli->error); 
-        }
+        $condicion2 = "";
+        if($condicion !== ''){
+          $condicion2 = $condicion." AND";
+        } 
+        //$mx="DELETE FROM $folder WHERE $condicion2 cod!='$cod'";
         
+         $mysqli->query("DELETE FROM $folder WHERE $condicion2 cod!='$cod'") or die($mysqli->error); 
+        
+          
       }
 
-
+      
       //
       if ($data['respuesta'] == 'basica') {
         header("HTTP/1.1 200 OK");
@@ -798,11 +953,61 @@ $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!=
       } else {
         if ($utilizar_cod == 'si') {
           if ($condicion != '') {
-            $condicion .= "AND cod='$cod'";
+            $condicion .= " AND cod='$cod'";
           } else {
             $condicion .= "cod='$cod'";
           }
         }
+/*
+        header("HTTP/1.1 400 ERROR");
+        echo '{"error":"D:' . $condicion.'+'.$orden.'"}';
+        //echo '{"error":"F:' . $mx. '"}';
+        return;
+        */
+        /// si es el listado de productos al terminar enviamos la copia del pedido por email
+        if($folder=='cinva_order_produts'){
+          $pedido_id= $columna_id;
+          ob_start();
+          include("./pedido.php");
+          $message = ob_get_contents();
+          ob_end_clean();
+
+          ob_start();
+          include("../api/mail.php");
+          $html = ob_get_contents();
+          ob_end_clean();
+          
+          
+          ///
+          $rEmpresa = $mysqli->query("SELECT * FROM cinva_config LIMIT 1") or die($mysqli->error);
+$rowEmpresa = $rEmpresa->fetch_array();
+$rPedido = $mysqli->query("SELECT cinva_clientes.* FROM cinva_orders, cinva_clientes WHERE cinva_orders.id='$pedido_id' AND cinva_clientes.id=cinva_orders.comprador_id LIMIT 1") or die($mysqli->error);
+$rowPedido = $rPedido->fetch_array();
+
+
+          $subject = $rowEmpresa['nombre'].' - Pedido N. ' . $pedido_id ;
+          $from_email = $rowEmpresa['email'];
+          $send_email = $rowPedido['email'];
+          
+          if (strtoupper(substr(PHP_OS, 0, 3) == 'WIN')) {
+            $eol = "\r\n";
+          } elseif (strtoupper(substr(PHP_OS, 0, 3) == 'MAC')) {
+            $eol = "\r";
+          } else {
+            $eol = "\n";
+          }
+          $header = "Content-type: text/html" . $eol;
+          //dirección del remitente
+          $header .= 'From: ' . $rowEmpresa['nombre'] . ' <' . $from_email . '>' . $eol;
+          $header .= 'Reply-To: ' . $rowEmpresa['nombre'] . ' <' . $from_email . '>' . $eol;
+          $header .= "Message-ID:<" . time() . " TheSystem@" . $_SERVER['SERVER_NAME'] . ">" . $eol;
+          $header .= "X-Mailer: PHP v" . phpversion() . $eol;
+          $header .= 'MIME-Version: 1.0' . $eol;
+          //////
+          mail($send_email, $subject, $html, $header);
+          mail($from_email, $subject, $html, $header);
+        }
+// fin email
 
         if ($condicion != '') {
           $result = $mysqli->query("SELECT * FROM $folder WHERE $condicion ORDER BY $orden");
@@ -1027,10 +1232,7 @@ $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!=
       //echo '[{"error":"yess-'.$user_id.'+'.$time_life.'"}]'; 
       echo '[{"error":"yes"}]';
     } else {
-      ///company_id
-      $rCi = $mysqli->query("SELECT company_id FROM users WHERE id='$user_id' LIMIT 1 ");
-      $rowCi = $rCi->fetch_array(MYSQLI_ASSOC);
-      $company_id = $rowCi['company_id'];
+      
       /// run
       $cod = time();
       $a = 0;
@@ -1052,17 +1254,17 @@ $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!=
         //
         if ($m_id > 1000000) {
           ///Nuevo Registro
-          $mysqli->query("INSERT INTO menu (company_id,menu_id,menu,type,link,head,foot,side,position,submenu,metadescription,metakeywords,cod) VALUES ('$company_id','$m_menu_id','$m_menu','$m_type','$m_link','$m_head','$m_foot','$m_slide','$m_position','$m_submenu','$m_metadescription','$m_metakeywords','$cod')") or die($mysqli->error);
+          $mysqli->query("INSERT INTO menu (menu_id,menu,type,link,head,foot,side,position,submenu,metadescription,metakeywords,cod) VALUES ('$m_menu_id','$m_menu','$m_type','$m_link','$m_head','$m_foot','$m_slide','$m_position','$m_submenu','$m_metadescription','$m_metakeywords','$cod')") or die($mysqli->error);
         } else {
           ///actualizar
-          $mysqli->query("UPDATE menu SET company_id='$company_id', menu_id='$m_menu_id',menu='$m_menu',type='$m_type',link='$m_link',head='$m_head',foot='$m_foot',side='$m_slide',position='$m_position',submenu='$m_submenu',metadescription='$m_metadescription',metakeywords='$m_metakeywords',cod='$cod' WHERE id='$m_id'") or die($mysqli->error);
+          $mysqli->query("UPDATE menu SET menu_id='$m_menu_id',menu='$m_menu',type='$m_type',link='$m_link',head='$m_head',foot='$m_foot',side='$m_slide',position='$m_position',submenu='$m_submenu',metadescription='$m_metadescription',metakeywords='$m_metakeywords',cod='$cod' WHERE id='$m_id'") or die($mysqli->error);
         }
       }
       /// borramos los que no están
-      $mysqli->query("DELETE FROM menu WHERE company_id='$company_id' AND cod!='$cod'") or die($mysqli->error);
+      $mysqli->query("DELETE FROM menu WHERE cod!='$cod'") or die($mysqli->error);
       //
       $menu = array();
-      $result = $mysqli->query("SELECT * FROM menu WHERE menu_id='0' AND company_id='$company_id' ORDER BY position ASC ");
+      $result = $mysqli->query("SELECT * FROM menu WHERE menu_id='0' ORDER BY position ASC ");
       $limit = mysqli_num_rows($result) + 1;
       while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
 
@@ -1144,10 +1346,7 @@ $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!=
       //echo '[{"error":"yess-'.$user_id.'+'.$time_life.'"}]'; 
       echo '[{"error":"error in token"}]';
     } else {
-      ///company_id
-      $rCi = $mysqli->query("SELECT company_id FROM users WHERE id='$user_id' LIMIT 1 ");
-      $rowCi = $rCi->fetch_array(MYSQLI_ASSOC);
-      $company_id = $rowCi['company_id'];
+      
       /// run
       $cod = time();
       $a = 0;
@@ -1164,17 +1363,17 @@ $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!=
         //
         if ($m_id > 1000000) {
           ///Nuevo Registro
-          $mysqli->query("INSERT INTO form (company_id,menu_id,`name`,`type`,`required`,position,cod) VALUES ('$company_id','$m_menu_id','$m_name','$m_type','$m_required','$m_position','$cod')") or die($mysqli->error);
+          $mysqli->query("INSERT INTO form (menu_id,`name`,`type`,`required`,position,cod) VALUES ('$m_menu_id','$m_name','$m_type','$m_required','$m_position','$cod')") or die($mysqli->error);
         } else {
           ///actualizar
-          $mysqli->query("UPDATE form SET company_id='$company_id', menu_id='$m_menu_id',`name`='$m_name',`type`='$m_type',`required`='$m_required',position='$m_position',cod='$cod' WHERE id='$m_id'") or die($mysqli->error);
+          $mysqli->query("UPDATE form SET menu_id='$m_menu_id',`name`='$m_name',`type`='$m_type',`required`='$m_required',position='$m_position',cod='$cod' WHERE id='$m_id'") or die($mysqli->error);
         }
       }
       /// borramos los que no están
-      $mysqli->query("DELETE FROM form WHERE company_id='$company_id' AND cod!='$cod'") or die($mysqli->error);
+      $mysqli->query("DELETE FROM form WHERE cod!='$cod'") or die($mysqli->error);
       //
       $formL = array();
-      $result = $mysqli->query("SELECT * FROM form WHERE menu_id='$m_menu_id' AND company_id='$company_id' ORDER BY position ASC ");
+      $result = $mysqli->query("SELECT * FROM form WHERE menu_id='$m_menu_id' ORDER BY position ASC ");
 
       while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
 
@@ -1216,7 +1415,7 @@ $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!=
 
       foreach ($data['listForm'] as $form) {
         $a++;
-        $company_id = $form['company_id'];
+        
         $m_id = $form['id'];
         $m_response = $form['response'];
         $m_state = $form['state'];
@@ -1232,7 +1431,7 @@ $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!=
       $date1 = $_GET['date1'];
       $date2 = $_GET['date2'];
       $formL = array();
-      $result = $mysqli->query("SELECT * FROM forms_received WHERE company_id='$company_id' AND `date`>='$date1' AND `date`<='$date2' ORDER BY `date` DESC ");
+      $result = $mysqli->query("SELECT * FROM forms_received WHERE `date`>='$date1' AND `date`<='$date2' ORDER BY `date` DESC ");
 
       while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
         $formL[] = $row;
@@ -1410,10 +1609,6 @@ $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!=
       //echo '[{"error":"yess-'.$user_id.'+'.$time_life.'"}]'; 
       echo '[{"error":"Error in Token"}]';
     } else {
-      ///company_id
-      $rCi = $mysqli->query("SELECT company_id FROM users WHERE id='$user_id' LIMIT 1 ");
-      $rowCi = $rCi->fetch_array(MYSQLI_ASSOC);
-      $company_id = $rowCi['company_id'];
       /// se procesa
       $cod = time();
       $a = 0;
@@ -1429,18 +1624,18 @@ $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!=
 
         if ($m_id > 1000000) {
           ///Nuevo Registro
-          $mysqli->query("INSERT INTO categories (company_id,category,`description`,position,`image`,active,cod) VALUES ('$company_id','$m_category','$m_description','$m_position','$m_image','$m_active','$cod')") or die($mysqli->error);
+          $mysqli->query("INSERT INTO cinva_categories (category,`description`,position,`image`,active,cod) VALUES ('$m_category','$m_description','$m_position','$m_image','$m_active','$cod')") or die($mysqli->error);
         } else {
           ///actualizar
-          $mysqli->query("UPDATE categories SET company_id='$company_id', category='$m_category', `description`='$m_description',position='$m_position',`image`='$m_image',active='$m_active',cod='$cod' WHERE id='$m_id'") or die($mysqli->error);
+          $mysqli->query("UPDATE cinva_categories SET category='$m_category', `description`='$m_description',position='$m_position',`image`='$m_image',active='$m_active',cod='$cod' WHERE id='$m_id'") or die($mysqli->error);
         }
       }
       /// borramos los que no están
-      $mysqli->query("DELETE FROM categories WHERE company_id='$company_id' AND cod!='$cod'") or die($mysqli->error);
+      $mysqli->query("DELETE FROM cinva_categories WHERE cod!='$cod'") or die($mysqli->error);
       //
       $categories = array();
 
-      $result = $mysqli->query("SELECT * FROM categories WHERE company_id='$company_id' ORDER BY active DESC, position ASC ");
+      $result = $mysqli->query("SELECT * FROM cinva_categories ORDER BY active DESC, position ASC ");
       $c = 0;
       while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
         $c++;
@@ -1449,7 +1644,6 @@ $mysqli->query("DELETE FROM $folder WHERE $condicion cod!='$cod' and temporada!=
         } else {
           $row['active'] = true;
         }
-
 
         $categories[] = $row;
       }
@@ -2256,7 +2450,7 @@ $target_file_name_base = $folder_id.'-'.limpiar_tildes($ref);
     $company_id = $_GET['company_id'];
     $tokenWeb = $_GET['tokenWeb'];
 
-    $tokenB = md5($company_id . 'Fr-96(');
+    $tokenB = md5($company_id . $key_encrypt_web);
 
     if ($tokenWeb != $tokenB) {
       header("HTTP/1.1 202 ERROR");
@@ -2289,7 +2483,7 @@ $target_file_name_base = $folder_id.'-'.limpiar_tildes($ref);
       $now = date('Y-m-d H:i:s');
 
       ///Nuevo Registro
-      $mysqli->query("INSERT INTO forms_received (company_id,`page`,`date`,request) VALUES ('$company_id','$page','$now','$request')") or die($mysqli->error);
+      $mysqli->query("INSERT INTO forms_received (`page`,`date`,request) VALUES ('$page','$now','$request')") or die($mysqli->error);
 
 
 
@@ -2300,9 +2494,8 @@ $target_file_name_base = $folder_id.'-'.limpiar_tildes($ref);
 
       /// send
       if ($data['sendTo'] != '') {
-        $rCi = $mysqli->query("SELECT company FROM companies WHERE id='$company_id' LIMIT 1 ");
-        $rowCi = $rCi->fetch_array(MYSQLI_ASSOC);
-        $company = $rowCi['company'];
+        
+        $company = 'Cinva Publicidad';
 
 
         $message = '<strong>' . $now . '</strong><br>Web Page: ' . $page . '<br>Request: <br>' . $request;

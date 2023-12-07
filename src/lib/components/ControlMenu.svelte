@@ -109,7 +109,7 @@
 							$moduleAdmin = 'Pedidos';
 						}}
 					>
-						<i class="fa fa-circle" />
+						<i class="fa fa-cart-plus" />
 
 						<span class="text-sm ml-2 hidden md:block text-black">Pedidos</span>
 					</button>
